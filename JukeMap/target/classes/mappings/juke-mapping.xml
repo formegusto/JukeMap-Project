@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="JukeDAO">
+	<insert id="insertMarker">
+	<![CDATA[
+		INSERT INTO JUKE(jseq,lat,lon,id,title,content,likey)
+		VALUES ((SELECT ifnull(max(jseq), 0) + 1 FROM JUKE a),
+		#{lat}, #{lon}, #{id}, #{title}, #{content}, #{likey})
+	]]>
+	</insert>
+	<select id="getMarkerList" resultType="juke">
+	<![CDATA[
+		SELECT *
+		FROM JUKE
+		ORDER BY JSEQ DESC
+	]]>
+	</select>
+</mapper>
