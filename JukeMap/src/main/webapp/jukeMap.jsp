@@ -28,12 +28,70 @@
 	}
 </script>
 
+<!-- WebSocket -->
+<script>
+	var webSocket = new WebSocket('ws://192.168.25.23:8080/jukemap/community.do');
+    webSocket.onopen = function(event) {
+        onOpen(event)
+    };
+    webSocket.onmessage = function(event) {
+        onMessage(event)
+    };
+    function onMessage(event) {
+		alert(event.data);
+		
+		var message = event.data.split("|");
+        var messageType = message[0];
+        var seq = message[1];
+        
+        if(messageType == "onlikey"){
+        	alert("onlikey µé¿È");
+        	$("#likeyBtn-"+seq).removeAttr("onclick");
+        	$("#likeyBtn-"+seq).attr("onclick","offLikey(+"+seq+")");
+        	$("#likeyBtn-"+seq).html("<i class='fas fa-heart fa-2x'></i>");
+        } 
+        else if(messageType == "offlikey"){
+        	alert("offlikey µé¿È");
+        	$("#likeyBtn-"+seq).removeAttr("onclick");
+        	$("#likeyBtn-"+seq).attr("onclick","onLikey(+"+seq+")");
+        	$("#likeyBtn-"+seq).html("<i class='far fa-heart fa-2x'></i>");
+        }
+        else if(messageType == "onbookmark"){
+        	alert("onbookmark µé¿È");
+        	$("#bookmarkBtn-"+seq).removeAttr("onclick");
+        	$("#bookmarkBtn-"+seq).attr("onclick","offBookmark(+"+seq+")");
+        	$("#bookmarkBtn-"+seq).html("<i class='fas fa-bookmark fa-2x'></i>");
+        }
+        else if(messageType == "offbookmark"){
+        	alert("offbookmark µé¿È");
+        	$("#bookmarkBtn-"+seq).removeAttr("onclick");
+        	$("#bookmarkBtn-"+seq).attr("onclick","onBookmark(+"+seq+")");
+        	$("#bookmarkBtn-"+seq).html("<i class='far fa-bookmark fa-2x'></i>");
+        }
+    };
+    function onOpen(event) {
+    };
+    function onLikey(seq){
+    	webSocket.send("onlikey|" + seq);
+    };
+    function offLikey(seq){
+    	webSocket.send("offlikey|" + seq);
+    };
+    function onBookmark(seq){
+    	webSocket.send("onbookmark|"+seq);
+    };
+    function offBookmark(seq){
+    	webSocket.send("offbookmark|"+seq);
+    };
+</script>
+
 <nav class="navbar navbar-dark bg-primary">
 	<a class="navbar-brand" href="#">JukeMap</a>
 	<div class="btn-group" role="group" aria-label="Basic example">
 		<button type="button" class="btn btn-primary" onclick="audio.play()"><i class="fas fa-play"></i></button>
 		<button type="button" class="btn btn-primary" onclick="audio.pause()"><i class="fas fa-pause"></i></button>
 		<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#jukeAdd"><i class="fas fa-plus"></i></button>
+		<button type="button" class="btn btn-primary" onclick="location.href='jukeMap.do'"><i class="fas fa-redo-alt"></i></button>
 		<button type="button" class="btn btn-primary" onclick="changeAudio()">Change</button>
 	</div>
 </nav>
@@ -81,8 +139,8 @@
         	<td>${juke.id }</td>
         	<td>${juke.likey }</td>
         	<td>
-                <a href="#" style="color: black;"><i class="far fa-bookmark fa-2x"></i></a>
-                <a href="#" style="color: black;"><i class="far fa-heart fa-2x"></i></a>
+                <a id="bookmarkBtn-${juke.jseq }" href="#" style="color: black;" onclick="onBookmark(${juke.jseq})"><i class="far fa-bookmark fa-2x"></i></a>
+                <a id="likeyBtn-${juke.jseq }" href="#" style="color: black;" onclick="onLikey(${juke.jseq })"><i class="far fa-heart fa-2x"></i></a>
                 <a href="#" data-toggle="modal" data-target="#boardDetail" style="color: black;"><i class="far fa-file-alt fa-2x"></i></a>
             </td>
         </tr>
@@ -226,7 +284,7 @@ function displayMarker(locPosition, message) {
     map.setCenter(locPosition);      
 }
 </script>
-
+<!-- MapMarker -->
 <script>
 	<c:forEach items="${jukeList }" var="juke">
 		navigator.geolocation.getCurrentPosition(function(position) {
@@ -246,5 +304,7 @@ function displayMarker(locPosition, message) {
 		
 	</c:forEach>
 </script>
+
+
 </body>
 </html>
