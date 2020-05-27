@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="LikeyDAO">
+	<insert id="insertLikey">
+	<![CDATA[
+		INSERT INTO LIKEY(lseq,id,jseq)
+		VALUES ((SELECT ifnull(max(lseq), 0) + 1 FROM LIKEY a),
+		#{id}, #{jseq})
+	]]>	
+	</insert>
+	<delete id="deleteLikey">
+	<![CDATA[
+		DELETE FROM LIKEY
+		WHERE LSEQ=#{lseq}
+	]]>	
+	</delete>
+	<select id="getTopLikey" resultType="Integer">
+	<![CDATA[
+		SELECT ifnull(max(lseq), 0) + 0
+		FROM LIKEY
+		WHERE ID=#{id}
+	]]>	
+	</select>
+	<select id="getLikey" resultType="likey">
+	<![CDATA[
+		SELECT *
+		FROM LIKEY
+		WHERE LSEQ=${lseq}
+	]]>	
+	</select>
+	<select id="getLikeyList" resultType="likey">
+	<![CDATA[
+		SELECT *
+		FROM LIKEY
+		WHERE ID=#{id}
+		ORDER BY JSEQ DESC
+	]]>
+	</select>
+</mapper>

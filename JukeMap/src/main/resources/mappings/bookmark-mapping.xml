@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="BookmarkDAO">
+	<insert id="insertBM">
+	<![CDATA[
+		INSERT INTO BOOKMARK(bmseq,id,jseq)
+		VALUES ((SELECT ifnull(max(bmseq), 0) + 1 FROM BOOKMARK a),
+		#{id}, #{jseq})
+	]]>	
+	</insert>
+	<delete id="deleteBM">
+	<![CDATA[
+		DELETE FROM BOOKMARK
+		WHERE BMSEQ=#{bmseq}
+	]]>	
+	</delete>
+	<select id="getTopBM" resultType="Integer">
+	<![CDATA[
+		SELECT ifnull(max(bmseq), 0) + 0
+		FROM BOOKMARK
+		WHERE ID=#{id}
+	]]>	
+	</select>
+	<select id="getBM" resultType="bm">
+	<![CDATA[
+		SELECT *
+		FROM BOOKMARK
+		WHERE BMSEQ=${bmseq}
+	]]>	
+	</select>
+	<select id="getBMList" resultType="bm">
+	<![CDATA[
+		SELECT *
+		FROM BOOKMARK
+		WHERE ID=#{id}
+		ORDER BY JSEQ DESC
+	]]>
+	</select>
+</mapper>

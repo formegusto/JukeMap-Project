@@ -30,9 +30,20 @@
 
 <!-- WebSocket -->
 <script>
-	var webSocket = new WebSocket('ws://192.168.25.23:8080/jukemap/community.do');
+	if( window.location.protocol == 'http:' ){
+		alert('HTTP에서는 위치서비스가 제공되지 않습니다.')
+		var webSocket = new WebSocket('ws://' + window.location.host + '/jukemap/community.do');
+	} else {
+		var webSocket = new WebSocket('wss://' + window.location.host + '/jukemap/community.do');
+	}
+	
+	var id = '${user.id}';
+	
     webSocket.onopen = function(event) {
         onOpen(event)
+    };
+    webSocket.onclose = function(event) {
+        onClose(event)
     };
     webSocket.onmessage = function(event) {
         onMessage(event)
@@ -46,8 +57,9 @@
         
         if(messageType == "onlikey"){
         	alert("onlikey 들옴");
+        	var lseq = message[2];
         	$("#likeyBtn-"+seq).removeAttr("onclick");
-        	$("#likeyBtn-"+seq).attr("onclick","offLikey(+"+seq+")");
+        	$("#likeyBtn-"+seq).attr("onclick","offLikey(+"+lseq+")");
         	$("#likeyBtn-"+seq).html("<i class='fas fa-heart fa-2x'></i>");
         } 
         else if(messageType == "offlikey"){
@@ -58,8 +70,9 @@
         }
         else if(messageType == "onbookmark"){
         	alert("onbookmark 들옴");
+        	var bmseq = message[2];
         	$("#bookmarkBtn-"+seq).removeAttr("onclick");
-        	$("#bookmarkBtn-"+seq).attr("onclick","offBookmark(+"+seq+")");
+        	$("#bookmarkBtn-"+seq).attr("onclick","offBookmark(+"+bmseq+")");
         	$("#bookmarkBtn-"+seq).html("<i class='fas fa-bookmark fa-2x'></i>");
         }
         else if(messageType == "offbookmark"){
@@ -71,17 +84,19 @@
     };
     function onOpen(event) {
     };
+    function onClose(event) {
+    };
     function onLikey(seq){
-    	webSocket.send("onlikey|" + seq);
+    	webSocket.send("onlikey|" + seq + "|" + id);
     };
     function offLikey(seq){
     	webSocket.send("offlikey|" + seq);
     };
     function onBookmark(seq){
-    	webSocket.send("onbookmark|"+seq);
+    	webSocket.send("onbookmark|" + seq + "|" + id);
     };
     function offBookmark(seq){
-    	webSocket.send("offbookmark|"+seq);
+    	webSocket.send("offbookmark|" + seq);
     };
 </script>
 
@@ -101,8 +116,8 @@
 
 <!-- My JukeMapList -->
 <div class="col-xs-8 col-xs-offset-2 well">
-    <table class="table table-scroll">
-        <thead class="thead-dark">
+	<table class="table table-scroll">
+        <thead class="thead-light">
             <tr>
                 <th>My Music Title</th>
                 <th>My Music RegDate</th>
@@ -111,18 +126,29 @@
             </tr>
         </thead>
         <tbody>
-            <tr>
-                <td>1</td>
-                <td>Andrew</td>
-                <td>Jackson</td>
-                <td>Washington</td>
-            </tr>
+        <c:forEach items="${ujukeList }" var="ujuke">
+        <tr>
+        	<td>${ujuke.title }</td>
+        	<td>${ujuke.id }</td>
+        	<td>${ujuke.likey }</td>
+        	<td>
+                <a href="#" data-toggle="modal" data-target="#boardDetail" style="color: black;"><i class="far fa-file-alt fa-2x"></i></a>
+            </td>
+        </tr>
+        </c:forEach>
         </tbody>
     </table>
 </div>
-
+<!-- nav -->
+<nav>
+  <div class="nav nav-tabs" id="nav-tab" role="tablist">
+    <a class="nav-item nav-link active" id="nav-home-tab" data-toggle="tab" href="#nav-home" role="tab" aria-controls="nav-home" aria-selected="true">All</a>
+    <a class="nav-item nav-link" id="nav-profile-tab" data-toggle="tab" href="#nav-profile" role="tab" aria-controls="nav-profile" aria-selected="false">Bookmark</a>
+  </div>
+</nav>
 <!-- JukeMap Like List -->
-<div class="col-xs-8 col-xs-offset-2 well">
+<div class="tab-content col-xs-8 col-xs-offset-2 well" id="nav-tabContent">
+	<div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
     <table class="table table-scroll">
         <thead class="thead-light">
             <tr>
@@ -133,20 +159,63 @@
             </tr>
         </thead>
         <tbody>
+        <c:set var="bmNum" value="0"/>
+        <c:set var="lNum" value="0"/>
         <c:forEach items="${jukeList }" var="juke">
         <tr>
         	<td>${juke.title }</td>
         	<td>${juke.id }</td>
         	<td>${juke.likey }</td>
         	<td>
-                <a id="bookmarkBtn-${juke.jseq }" href="#" style="color: black;" onclick="onBookmark(${juke.jseq})"><i class="far fa-bookmark fa-2x"></i></a>
-                <a id="likeyBtn-${juke.jseq }" href="#" style="color: black;" onclick="onLikey(${juke.jseq })"><i class="far fa-heart fa-2x"></i></a>
+        	<c:choose>
+        		<c:when test="${juke.jseq eq bmList[bmNum].jseq }">
+        			<a id="bookmarkBtn-${juke.jseq }" href="#" style="color: black;" onclick="offBookmark(${bmList[bmNum].bmseq})"><i class="fas fa-bookmark fa-2x"></i></a>
+        			<c:set var="bmNum" value="${bmNum + 1 }"/>
+        		</c:when>
+        		<c:otherwise>
+        			<a id="bookmarkBtn-${juke.jseq }" href="#" style="color: black;" onclick="onBookmark(${juke.jseq})"><i class="far fa-bookmark fa-2x"></i></a>
+        		</c:otherwise>
+        	</c:choose>
+        	<c:choose>
+        		<c:when test="${juke.jseq eq likeyList[lNum].jseq }">
+        			<a id="likeyBtn-${juke.jseq }" href="#" style="color: black;" onclick="offLikey(${likeyList[lNum].lseq})"><i class="fas fa-heart fa-2x"></i></a>
+        			<c:set var="lNum" value="${lNum + 1 }"/>
+        		</c:when>
+        		<c:otherwise>
+        			<a id="likeyBtn-${juke.jseq }" href="#" style="color: black;" onclick="onLikey(${juke.jseq})"><i class="far fa-heart fa-2x"></i></a>
+        		</c:otherwise>
+        	</c:choose>
                 <a href="#" data-toggle="modal" data-target="#boardDetail" style="color: black;"><i class="far fa-file-alt fa-2x"></i></a>
             </td>
         </tr>
         </c:forEach>
         </tbody>
     </table>
+    </div>
+    <div class="tab-pane fade" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab">
+	<table class="table table-scroll">
+        <thead class="thead-light">
+            <tr>
+                <th>Title</th>
+                <th>Writer</th>
+                <th>Likey</th>
+                <th>Community</th>
+            </tr>
+        </thead>
+        <tbody>
+        <c:forEach items="${jbmList }" var="jbm">
+        <tr>
+        	<td>${jbm.title }</td>
+        	<td>${jbm.id }</td>
+        	<td>${jbm.likey }</td>
+        	<td>
+                <a href="#" data-toggle="modal" data-target="#boardDetail" style="color: black;"><i class="far fa-file-alt fa-2x"></i></a>
+            </td>
+        </tr>
+        </c:forEach>
+        </tbody>
+    </table>
+	</div>
 </div>
 
 <!-- BootStrap Modal -->
@@ -183,6 +252,7 @@
       </div>
       <div class="modal-body">
         <form name="marker" method="post" action="jukeMarkerAdd_proc.do" enctype="multipart/form-data">
+        <input type="hidden" name="id" value="${user.id }"/>
           <div class="form-group">
             <label for="recipient-name"  class="col-form-label">Title:</label>
             <input type="text" name="title" class="form-control" id="recipient-name">

@@ -10,6 +10,35 @@
 		#{lat}, #{lon}, #{id}, #{title}, #{content}, #{likey})
 	]]>
 	</insert>
+	<update id="upLikey">
+	<![CDATA[
+		UPDATE JUKE
+		SET LIKEY=LIKEY + 1
+		WHERE JSEQ = #{jseq}
+	]]>
+	</update>
+	<update id="downLikey">
+	<![CDATA[
+		UPDATE JUKE
+		SET LIKEY=LIKEY - 1
+		WHERE JSEQ=#{jseq}
+	]]>	
+	</update>
+	<select id="getJuke" resultType="juke">
+	<![CDATA[
+		SELECT *
+		FROM JUKE
+		WHERE JSEQ=#{jseq}
+	]]>
+	</select>
+	<select id="getJukeList" resultType="juke">
+	<![CDATA[
+		SELECT *
+		FROM JUKE
+		WHERE ID=#{id}
+		ORDER BY JSEQ DESC
+	]]>
+	</select>
 	<select id="getMarkerList" resultType="juke">
 	<![CDATA[
 		SELECT *
