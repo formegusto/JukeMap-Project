@@ -32,6 +32,12 @@ public class JukeServiceImpl implements JukeService {
 	}
 	
 	@Override
+	public Integer getJukeTopnum() {
+		// TODO Auto-generated method stub
+		return jukeDAO.getJukeTopnum();
+	}
+
+	@Override
 	public JukeVO getJuke(JukeVO vo) {
 		// TODO Auto-generated method stub
 		return jukeDAO.getJuke(vo);

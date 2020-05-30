@@ -9,6 +9,7 @@ public interface JukeService {
 	public void insertMarker(JukeVO vo);
 	public void upLikey(JukeVO vo);
 	public void downLikey(JukeVO vo);
+	public Integer getJukeTopnum();
 	public JukeVO getJuke(JukeVO vo);
 	public List<JukeVO> getJukeList(JukeVO vo);
 	// 마커 조회

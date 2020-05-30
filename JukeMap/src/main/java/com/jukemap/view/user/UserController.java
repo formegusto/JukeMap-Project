@@ -27,7 +27,17 @@ public class UserController {
 		
 		return "login.jsp";
 	}
-		
+	
+	// 로그인 기능
+	@RequestMapping(value="/logout.do")
+	public String logout(UserVO vo, HttpSession session,
+			Model model) {
+		System.out.println("[Spring Service MVC Framework] 로그아웃 기능 처리");
+
+		session.removeAttribute("user");
+		return "redirect:login.jsp";
+	}
+	
 	// 로그인 기능
 	@RequestMapping(value="/login.do")
 	public String login(UserVO vo, HttpSession session,

@@ -37,8 +37,10 @@ public class JukeController {
 			HttpSession session) throws IllegalStateException, IOException {
 		System.out.println(vo);
 		jukeService.insertMarker(vo);
+		
+	
 		String filePath = session.getServletContext().getRealPath("/music");
-		String fileName = "1.mp3";
+		String fileName = jukeService.getJukeTopnum() + ".mp3";
 		
 		File file = new File(filePath + "/" + fileName);
 		System.out.println(file.getPath());

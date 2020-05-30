@@ -9,6 +9,7 @@
 <link rel="stylesheet" href="resources/css/scroll.css">
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
 <link href="resources/fontawesome/css/all.css" rel="stylesheet">
+<link rel="icon" type="image/png" href="resources/images/icons/favicon.ico"/>
 <script defer src="resources/fontawesome/js/all.js"></script>
 </head>
 <body>
@@ -17,14 +18,14 @@
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
 <script>
 	var audio = new Audio("music/1.mp3");
-	function changeAudio(){
-		if(audio.src == 'https://localhost:8443/jukemap/music/2.mp3'){
-			audio.src = "music/1.mp3";
-		} 
-		else {
-			audio.src = "music/2.mp3";
-		}
-		alert(audio.src);
+	var audioSeq;
+	function audioPlay(){
+		audio.src = "music/" + audioSeq + ".mp3";
+		audio.play();
+	}
+	function audioMapPlay(seq){
+		audio.src = "music/" + seq + ".mp3";
+		audio.play();
 	}
 </script>
 
@@ -98,6 +99,11 @@
     function offBookmark(seq){
     	webSocket.send("offbookmark|" + seq);
     };
+    function fileNameChange(){
+    	var fileValue = $("#musicFile").val().split("\\");
+    	var fileName = fileValue[fileValue.length-1];
+    	$("#fileNameLabel").html(fileName);
+    }
 </script>
 
 <nav class="navbar navbar-dark bg-primary">
@@ -107,7 +113,7 @@
 		<button type="button" class="btn btn-primary" onclick="audio.pause()"><i class="fas fa-pause"></i></button>
 		<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#jukeAdd"><i class="fas fa-plus"></i></button>
 		<button type="button" class="btn btn-primary" onclick="location.href='jukeMap.do'"><i class="fas fa-redo-alt"></i></button>
-		<button type="button" class="btn btn-primary" onclick="changeAudio()">Change</button>
+		<button type="button" class="btn btn-primary" onclick="location.href='logout.do'"><i class="fas fa-power-off"></i></button>
 	</div>
 </nav>
 
@@ -132,7 +138,7 @@
         	<td>${ujuke.id }</td>
         	<td>${ujuke.likey }</td>
         	<td>
-                <a href="#" data-toggle="modal" data-target="#boardDetail" style="color: black;"><i class="far fa-file-alt fa-2x"></i></a>
+                <a href="#" data-toggle="modal" data-target="#boardDetail" style="color: black;" onclick="boardDetail('${ujuke.jseq }','${ujuke.title }','${ujuke.id }','${ujuke.content}','${ujuke.lat }','${ujuke.lon }')"><i class="far fa-file-alt fa-2x"></i></a>
             </td>
         </tr>
         </c:forEach>
@@ -185,7 +191,7 @@
         			<a id="likeyBtn-${juke.jseq }" href="#" style="color: black;" onclick="onLikey(${juke.jseq})"><i class="far fa-heart fa-2x"></i></a>
         		</c:otherwise>
         	</c:choose>
-                <a href="#" data-toggle="modal" data-target="#boardDetail" style="color: black;"><i class="far fa-file-alt fa-2x"></i></a>
+                <a href="#" data-toggle="modal" data-target="#boardDetail" style="color: black;" onclick="boardDetail('${juke.jseq }','${juke.title }','${juke.id }','${juke.content}','${juke.lat }','${juke.lon }')"><i class="far fa-file-alt fa-2x"></i></a>
             </td>
         </tr>
         </c:forEach>
@@ -224,17 +230,30 @@
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+        <h5 class="modal-title" id="boardDetailTitle"></h5>
 	        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
 	          <span aria-hidden="true">&times;</span>
 	        </button>
 	      </div>
 	      <div class="modal-body">
-	        ...
+	        <form name="marker" method="post" enctype="multipart/form-data">
+	          <div class="form-group">
+	            <label for="recipient-name"  class="col-form-label">ID:</label>
+	            <input type="text" class="form-control" id="boardDetailId" readonly="readonly">
+	          </div>
+	          <div class="form-group">
+	            <label for="message-text"  class="col-form-label">Content:</label>
+	            <textarea class="form-control" id="boardDetailContent" readonly="readonly"></textarea>
+	          </div>
+	          <div class="form-group">
+	            <label for="recipient-name"  class="col-form-label">Address:</label>
+	            <input type="text" class="form-control" id="boardDetailAddress" readonly="readonly">
+	          </div>
+	        </form>
 	      </div>
       <div class="modal-footer">
 	        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-	        <button type="button" class="btn btn-primary">Save changes</button>
+	        <button type="button" id="musicBtn" class="btn btn-primary" onclick="audioPlay()" >Music Start</button>
 	      </div>
 	    </div>
 	  </div>
@@ -251,7 +270,7 @@
         </button>
       </div>
       <div class="modal-body">
-        <form name="marker" method="post" action="jukeMarkerAdd_proc.do" enctype="multipart/form-data">
+        <form name="newMarker" method="post" action="jukeMarkerAdd_proc.do" enctype="multipart/form-data">
         <input type="hidden" name="id" value="${user.id }"/>
           <div class="form-group">
             <label for="recipient-name"  class="col-form-label">Title:</label>
@@ -263,8 +282,8 @@
           </div>
           <div class="form-group">
 			  <div class="custom-file">
-			    <input type="file" name="musicFile" class="custom-file-input" id="inputGroupFile02">
-			    <label class="custom-file-label" for="inputGroupFile02">Choose file</label>
+			    <input type="file" id="musicFile" name="musicFile" class="custom-file-input" id="inputGroupFile02" onchange="fileNameChange()" accept="audio/mp3" required="required">
+			    <label id="fileNameLabel" class="custom-file-label" for="inputGroupFile02">Choose file</label>
 			  </div>
 			</div>
           <div class="form-row">
@@ -279,13 +298,13 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary" onclick="marker.submit()">Registe Marker</button>
+        <button type="button" class="btn btn-primary" onclick="newMarker.submit()">Register Marker</button>
       </div>
     </div>
   </div>
 </div>
 
-<script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=e5bf3a2fe6fdda87dfe4d15dea3351e4"></script>
+<script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=e5bf3a2fe6fdda87dfe4d15dea3351e4&libraries=services"></script>
 <script>
 var mapContainer = document.getElementById('map'), // 지도를 표시할 div 
     mapOption = { 
@@ -293,7 +312,10 @@ var mapContainer = document.getElementById('map'), // 지도를 표시할 div
         level: 5 // 지도의 확대 레벨 
     }; 
 
-var map = new kakao.maps.Map(mapContainer, mapOption); // 지도를 생성합니다
+//지도를 생성합니다    
+var map = new kakao.maps.Map(mapContainer, mapOption); 
+// 주소-좌표 변환 객체를 생성합니다
+var geocoder = new kakao.maps.services.Geocoder();
 
 // HTML5의 geolocation으로 사용할 수 있는지 확인합니다 
 if (navigator.geolocation) {
@@ -353,26 +375,58 @@ function displayMarker(locPosition, message) {
     // 지도 중심좌표를 접속위치로 변경합니다
     map.setCenter(locPosition);      
 }
+
 </script>
 <!-- MapMarker -->
 <script>
 	<c:forEach items="${jukeList }" var="juke">
 		navigator.geolocation.getCurrentPosition(function(position) {
+		   	// 마커 생성
+		   var lat = ${juke.lat }, // 위도
+		       lon = ${juke.lon}; // 경도
+		       
+		   var locPosition = new kakao.maps.LatLng(lat, lon); // 마커가 표시될 위치를 geolocation으로 얻어온 좌표로 생성합니다
 		        
-		        var lat = ${juke.lat }, // 위도
-		            lon = ${juke.lon}; // 경도
-		        
-		        var locPosition = new kakao.maps.LatLng(lat, lon); // 마커가 표시될 위치를 geolocation으로 얻어온 좌표로 생성합니다
-		        
-		        var marker = new kakao.maps.Marker({  
-			        map: map, 
-			        position: locPosition
-			    });
-		        
-		        marker.setMap(map);
+		   var marker = new kakao.maps.Marker({  
+		       map: map, 
+		       position: locPosition
+		   });
+		   
+		   marker.setMap(map);
+		   
+		   var jseq = ${juke.jseq};
+		   var content = "${juke.content}";
+		   // 마커에 이벤트 등록
+		   // 마커를 클릭했을 때 마커 위에 표시할 인포윈도우를 생성합니다 
+		   var iwContent = '<div style="padding:15px; width:250px; overflow:hidden; word-break:break-all;">' + content + '<br/>' + 
+		   		'<button type="button" class="btn btn-primary" onclick="window.open(\'https://map.kakao.com/link/to/' + content + ',' + lat + ',' + lon + '\')"><i class="fas fa-route"></i></button>' + 
+		   		'<button type="button" class="btn btn-primary" onclick="audioMapPlay(' + jseq + ')"><i class="fas fa-play"></i></button>' + 
+		   		'</div>', // 인포윈도우에 표출될 내용으로 HTML 문자열이나 document element가 가능합니다
+		       iwRemoveable = true; // removeable 속성을 ture 로 설정하면 인포윈도우를 닫을 수 있는 x버튼이 표시됩니다
+
+		   // 인포윈도우를 생성합니다
+		   var infowindow = new kakao.maps.InfoWindow({
+		       content : iwContent,
+		       removable : iwRemoveable
+		   });
+
+		   // 마커에 클릭이벤트를 등록합니다
+		   kakao.maps.event.addListener(marker, 'click', function() {
+		         // 마커 위에 인포윈도우를 표시합니다
+		         infowindow.open(map, marker);  
+		   });
 		});
 		
 	</c:forEach>
+	function boardDetail(seq,title,id,content,lat,lon){
+    	$("#boardDetailTitle").html(title);
+    	$("#boardDetailId").val(id);
+    	$("#boardDetailContent").val(content);
+    	geocoder.coord2Address(lon, lat, function(result, status){
+    		$("#boardDetailAddress").val(result[0].address.address_name);
+    	});
+    	audioSeq = seq;
+    }
 </script>
 
 

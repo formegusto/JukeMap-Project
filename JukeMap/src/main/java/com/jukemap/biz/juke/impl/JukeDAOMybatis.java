@@ -29,6 +29,11 @@ public class JukeDAOMybatis {
 		mybatis.insert("JukeDAO.downLikey",vo);
 	}
 	
+	public Integer getJukeTopnum() {
+		System.out.println("===> Mybatis로 getJukeTopnum() 기능 처리");
+		return mybatis.selectOne("JukeDAO.getJukeTopnum");
+	}
+	
 	public JukeVO getJuke(JukeVO vo) {
 		System.out.println("===> Mybatis로 getJuke() 마커 조회 기능 처리");
 		return mybatis.selectOne("JukeDAO.getJuke", vo);

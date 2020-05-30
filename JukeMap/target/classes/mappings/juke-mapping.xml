@@ -24,6 +24,12 @@
 		WHERE JSEQ=#{jseq}
 	]]>	
 	</update>
+	<select id="getJukeTopnum" resultType="Integer">
+	<![CDATA[
+		SELECT ifnull(max(jseq), 0)
+		FROM JUKE
+	]]>
+	</select>
 	<select id="getJuke" resultType="juke">
 	<![CDATA[
 		SELECT *
@@ -43,7 +49,7 @@
 	<![CDATA[
 		SELECT *
 		FROM JUKE
-		ORDER BY JSEQ DESC
+		ORDER BY LIKEY DESC
 	]]>
 	</select>
 </mapper>
