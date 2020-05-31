@@ -49,7 +49,7 @@
 	<![CDATA[
 		SELECT *
 		FROM JUKE
-		ORDER BY LIKEY DESC
+		ORDER BY JSEQ DESC
 	]]>
 	</select>
 </mapper>

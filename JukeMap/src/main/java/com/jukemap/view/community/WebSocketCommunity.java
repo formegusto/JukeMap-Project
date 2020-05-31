@@ -54,7 +54,14 @@ public class WebSocketCommunity {
 					vo.setJseq(Integer.parseInt(seq));
 					bookmarkService.insertBM(vo);
 					System.out.println("[Server] insertBM");
-					message = messageType + "|" + seq + "|" + bookmarkService.getTopBM(vo);
+					
+					JukeVO jvo = new JukeVO();
+					jvo.setJseq(Integer.parseInt(seq));
+					JukeVO juke = jukeService.getJuke(jvo);
+					
+					message = messageType + "|" + seq + "|" + bookmarkService.getTopBM(vo) + "|" + 
+							juke.getTitle() + "|" + juke.getId() + "|" + juke.getContent() + "|" + 
+							juke.getLikey() + "|" + juke.getLat() + "|" + juke.getLon();
 				} else if(messageType.equals("offbookmark")) {
 					String bmseq = message.split("\\|")[1];
 					BookmarkVO vo = new BookmarkVO();

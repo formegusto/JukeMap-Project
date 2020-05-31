@@ -9,6 +9,7 @@
 <link rel="stylesheet" href="resources/css/scroll.css">
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
 <link href="resources/fontawesome/css/all.css" rel="stylesheet">
+<link rel="stylesheet" type="text/css" href="//cdn.datatables.net/1.10.21/css/dataTables.bootstrap4.min.css">
 <link rel="icon" type="image/png" href="resources/images/icons/favicon.ico"/>
 <script defer src="resources/fontawesome/js/all.js"></script>
 </head>
@@ -16,6 +17,32 @@
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
+<script src="//cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js"></script>
+<script src="//cdn.datatables.net/1.10.21/js/dataTables.bootstrap4.min.js"></script>
+
+<script>
+	$(document).ready(function(){
+		$("#myTable").DataTable({
+			searching: false,
+			lengthChange:false,
+			info:false,
+			paging:false
+		});
+		$("#communityTable").DataTable({
+			searching: false,
+			lengthChange:false,
+			info:false,
+			paging:false
+		});
+		$("#bookmarkTable").DataTable({
+			searching: false,
+			lengthChange:false,
+			info:false,
+			paging:false
+		});
+	});
+</script>
+
 <script>
 	var audio = new Audio("music/1.mp3");
 	var audioSeq;
@@ -71,16 +98,37 @@
         }
         else if(messageType == "onbookmark"){
         	alert("onbookmark µé¿È");
+        	
+        	var jseq = message[1];
         	var bmseq = message[2];
+        	var title = message[3];
+        	var writer = message[4];
+        	var content = message[5];
+        	var likey = message[6];
+        	var lat = message[7];
+        	var lon = message[8];
+        	
         	$("#bookmarkBtn-"+seq).removeAttr("onclick");
         	$("#bookmarkBtn-"+seq).attr("onclick","offBookmark(+"+bmseq+")");
         	$("#bookmarkBtn-"+seq).html("<i class='fas fa-bookmark fa-2x'></i>");
+        	$("#bookmarkBody").append(
+        		"<tr id=\'bookmarkTr-" + jseq + "\'>" + 
+        		"<td>" + title + "</td>" + 
+            	"<td>" + writer + "</td>" + 
+            	"<td>" + likey + "</td>" +
+            	"<td>" +
+                '<a href="#" data-toggle="modal" data-target="#boardDetail" style="color: black;" onclick="boardDetail(\'' +
+                		jseq + '\',\'' + title + '\',\'' + writer + '\',\'' + content + '\',\'' + lat + '\',\'' + 
+                		lon + '\')"><i class="far fa-file-alt fa-2x"></i></a>' +
+                "</td>)");
+        	
         }
         else if(messageType == "offbookmark"){
         	alert("offbookmark µé¿È");
         	$("#bookmarkBtn-"+seq).removeAttr("onclick");
         	$("#bookmarkBtn-"+seq).attr("onclick","onBookmark(+"+seq+")");
         	$("#bookmarkBtn-"+seq).html("<i class='far fa-bookmark fa-2x'></i>");
+        	$("#bookmarkTr-"+seq).remove();
         }
     };
     function onOpen(event) {
@@ -122,7 +170,7 @@
 
 <!-- My JukeMapList -->
 <div class="col-xs-8 col-xs-offset-2 well">
-	<table class="table table-scroll">
+	<table id="myTable" class="table table-scroll">
         <thead class="thead-light">
             <tr>
                 <th>My Music Title</th>
@@ -155,7 +203,7 @@
 <!-- JukeMap Like List -->
 <div class="tab-content col-xs-8 col-xs-offset-2 well" id="nav-tabContent">
 	<div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
-    <table class="table table-scroll">
+    <table id="communityTable" class="table table-scroll">
         <thead class="thead-light">
             <tr>
                 <th>Title</th>
@@ -199,7 +247,7 @@
     </table>
     </div>
     <div class="tab-pane fade" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab">
-	<table class="table table-scroll">
+		<table id="bookmarkTable" class="table table-scroll">
         <thead class="thead-light">
             <tr>
                 <th>Title</th>
@@ -208,14 +256,14 @@
                 <th>Community</th>
             </tr>
         </thead>
-        <tbody>
+        <tbody id="bookmarkBody">
         <c:forEach items="${jbmList }" var="jbm">
-        <tr>
+        <tr id="bookmarkTr-${jbm.jseq }">
         	<td>${jbm.title }</td>
         	<td>${jbm.id }</td>
         	<td>${jbm.likey }</td>
         	<td>
-                <a href="#" data-toggle="modal" data-target="#boardDetail" style="color: black;"><i class="far fa-file-alt fa-2x"></i></a>
+                <a href="#" data-toggle="modal" data-target="#boardDetail" style="color: black;" onclick="boardDetail('${jbm.jseq }','${jbm.title }','${jbm.id }','${jbm.content}','${jbm.lat }','${jbm.lon }')"><i class="far fa-file-alt fa-2x"></i></a>
             </td>
         </tr>
         </c:forEach>

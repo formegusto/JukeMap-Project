@@ -4,7 +4,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<c:if test="${msg ne '' }">
+	<c:if test="${msg ne '' and !empty msg and msg ne null}">
 		<script>
 			var msg = "${msg}"
 			alert(msg)
