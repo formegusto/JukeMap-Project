@@ -10,6 +10,7 @@
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
 <link href="resources/fontawesome/css/all.css" rel="stylesheet">
 <link rel="stylesheet" type="text/css" href="//cdn.datatables.net/1.10.21/css/dataTables.bootstrap4.min.css">
+<link rel="stylesheet" type="text/css" href="resources/css/toast.css">
 <link rel="icon" type="image/png" href="resources/images/icons/favicon.ico"/>
 <script defer src="resources/fontawesome/js/all.js"></script>
 </head>
@@ -56,8 +57,20 @@
 	}
 </script>
 
-<!-- WebSocket -->
+<!-- WebSocket - Community 기능 -->
 <script>
+	function showToast(msg){
+		var toast = document.getElementById('toastMsg');
+		toast.innerHTML = msg;
+		var isToastShown = false;
+		if (isToastShown) return;
+		isToastShown = true;
+		toast.classList.add('show');
+		setTimeout(function(){
+			toast.classList.remove('show');
+			isToastShown = false;
+		}, 2700);
+	}
 	if( window.location.protocol == 'http:' ){
 		alert('HTTP에서는 위치서비스가 제공되지 않습니다.')
 		var webSocket = new WebSocket('ws://' + window.location.host + '/jukemap/community.do');
@@ -77,27 +90,29 @@
         onMessage(event)
     };
     function onMessage(event) {
-		alert(event.data);
+		//alert(event.data);
 		
 		var message = event.data.split("|");
         var messageType = message[0];
         var seq = message[1];
         
         if(messageType == "onlikey"){
-        	alert("onlikey 들옴");
+        	//alert("onlikey 들옴");
         	var lseq = message[2];
         	$("#likeyBtn-"+seq).removeAttr("onclick");
         	$("#likeyBtn-"+seq).attr("onclick","offLikey(+"+lseq+")");
         	$("#likeyBtn-"+seq).html("<i class='fas fa-heart fa-2x'></i>");
+        	showToast('좋아요가 반영되었습니다.');
         } 
         else if(messageType == "offlikey"){
-        	alert("offlikey 들옴");
+        	//alert("offlikey 들옴");
         	$("#likeyBtn-"+seq).removeAttr("onclick");
         	$("#likeyBtn-"+seq).attr("onclick","onLikey(+"+seq+")");
         	$("#likeyBtn-"+seq).html("<i class='far fa-heart fa-2x'></i>");
+        	showToast('좋아요가 취소되었습니다.');
         }
         else if(messageType == "onbookmark"){
-        	alert("onbookmark 들옴");
+        	//alert("onbookmark 들옴");
         	
         	var jseq = message[1];
         	var bmseq = message[2];
@@ -108,29 +123,34 @@
         	var lat = message[7];
         	var lon = message[8];
         	
+        	
         	$("#bookmarkBtn-"+seq).removeAttr("onclick");
         	$("#bookmarkBtn-"+seq).attr("onclick","offBookmark(+"+bmseq+")");
         	$("#bookmarkBtn-"+seq).html("<i class='fas fa-bookmark fa-2x'></i>");
-        	$("#bookmarkBody").append(
-        		"<tr id=\'bookmarkTr-" + jseq + "\'>" + 
-        		"<td>" + title + "</td>" + 
-            	"<td>" + writer + "</td>" + 
-            	"<td>" + likey + "</td>" +
-            	"<td>" +
-                '<a href="#" data-toggle="modal" data-target="#boardDetail" style="color: black;" onclick="boardDetail(\'' +
-                		jseq + '\',\'' + title + '\',\'' + writer + '\',\'' + content + '\',\'' + lat + '\',\'' + 
-                		lon + '\')"><i class="far fa-file-alt fa-2x"></i></a>' +
-                "</td>)");
         	
+            var newRow = $('#bookmarkTable').DataTable().row.add([
+            	bmseq,
+            	title,
+            	writer,
+            	likey,
+            	'<a href="#" data-toggle="modal" data-target="#boardDetail" style="color: black;" onclick="boardDetail(\'' +
+        		jseq + '\',\'' + title + '\',\'' + writer + '\',\'' + content + '\',\'' + lat + '\',\'' + 
+        		lon + '\')"><i class="far fa-file-alt fa-2x"></i></a>'
+            ]).draw(false).node();
+            $(newRow).attr("id","bookmarkTr-" + jseq);
+            showToast('북마크 목록에 저장했습니다.');
         }
         else if(messageType == "offbookmark"){
-        	alert("offbookmark 들옴");
+        	//alert("offbookmark 들옴");
         	$("#bookmarkBtn-"+seq).removeAttr("onclick");
         	$("#bookmarkBtn-"+seq).attr("onclick","onBookmark(+"+seq+")");
         	$("#bookmarkBtn-"+seq).html("<i class='far fa-bookmark fa-2x'></i>");
-        	$("#bookmarkTr-"+seq).remove();
+        	
+        	$("#bookmarkTable").DataTable().row('#bookmarkTr-' + seq).remove().draw(false);
+        	showToast('북마크 목록에서 삭제했습니다.');
         }
     };
+    
     function onOpen(event) {
     };
     function onClose(event) {
@@ -153,6 +173,8 @@
     	$("#fileNameLabel").html(fileName);
     }
 </script>
+
+<div id="toastMsg">좋아요가 반영되었습니다.</div>
 
 <nav class="navbar navbar-dark bg-primary">
 	<a class="navbar-brand" href="#">JukeMap</a>
@@ -206,6 +228,7 @@
     <table id="communityTable" class="table table-scroll">
         <thead class="thead-light">
             <tr>
+            	<th>seq</th>
                 <th>Title</th>
                 <th>Writer</th>
                 <th>Likey</th>
@@ -217,6 +240,7 @@
         <c:set var="lNum" value="0"/>
         <c:forEach items="${jukeList }" var="juke">
         <tr>
+        	<td>${juke.jseq }</td>
         	<td>${juke.title }</td>
         	<td>${juke.id }</td>
         	<td>${juke.likey }</td>
@@ -250,6 +274,7 @@
 		<table id="bookmarkTable" class="table table-scroll">
         <thead class="thead-light">
             <tr>
+            	<th>seq</th>
                 <th>Title</th>
                 <th>Writer</th>
                 <th>Likey</th>
@@ -259,6 +284,7 @@
         <tbody id="bookmarkBody">
         <c:forEach items="${jbmList }" var="jbm">
         <tr id="bookmarkTr-${jbm.jseq }">
+        	<td>${jbm.jseq }</td>
         	<td>${jbm.title }</td>
         	<td>${jbm.id }</td>
         	<td>${jbm.likey }</td>

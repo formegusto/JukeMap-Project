@@ -1,0 +1,32 @@
+#toastMsg {
+	visibility: hidden;  
+    position: fixed;    
+    bottom: 100px;      
+    left: 50%;                
+    transform: translateX(-50%);   
+    min-width: 100px;   
+    border-radius: 25px;  
+    background-color: #666666;     
+    color: #FFFFFF;   
+    padding: 15px 25px;     
+}
+#toastMsg.show {
+    visibility: visible;    
+    animation: fade-in 700ms, fade-out 700ms 2000ms     
+}
+@keyframes fade-in {
+    from {
+		opacity: 0;
+    }
+    to {
+		opacity: 1;
+    }
+}
+@keyframes fade-out {
+	from {
+		opacity: 1;
+	}
+	to {
+		opacity: 0;
+	}
+}

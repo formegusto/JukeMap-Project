@@ -1,0 +1,12 @@
+$("#bookmarkBody").append(
+"<tr id=\'bookmarkTr-" + jseq + "\'>" + 
+"<td>" + title + "</td>" + 
+"<td>" + writer + "</td>" + 
+"<td>" + likey + "</td>" +
+"<td>" +
+'<a href="#" data-toggle="modal" data-target="#boardDetail" style="color: black;" onclick="boardDetail(\'' +
+jseq + '\',\'' + title + '\',\'' + writer + '\',\'' + content + '\',\'' + lat + '\',\'' + 
+lon + '\')"><i class="far fa-file-alt fa-2x"></i></a>' +
+"</td>)");
+
+$("#bookmarkTr-"+seq).remove();
