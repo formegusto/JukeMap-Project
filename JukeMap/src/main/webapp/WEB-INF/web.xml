@@ -32,4 +32,31 @@
     <servlet-name>action</servlet-name>
     <url-pattern>*.do</url-pattern>
   </servlet-mapping>
+  <filter>
+    <display-name>LoginFilter</display-name>
+    <filter-name>LoginFilter</filter-name>
+    <filter-class>com.jukemap.filter.LoginFilter</filter-class>
+  </filter>
+  <filter-mapping>
+    <filter-name>LoginFilter</filter-name>
+    <url-pattern>/login.jsp</url-pattern>
+  </filter-mapping>
+  <filter>
+    <display-name>JukeFilter</display-name>
+    <filter-name>JukeFilter</filter-name>
+    <filter-class>com.jukemap.filter.JukeFilter</filter-class>
+  </filter>
+  <filter-mapping>
+    <filter-name>JukeFilter</filter-name>
+    <url-pattern>/jukeMap.jsp</url-pattern>
+  </filter-mapping>
+  <filter>
+    <display-name>RegisterFilter</display-name>
+    <filter-name>RegisterFilter</filter-name>
+    <filter-class>com.jukemap.filter.RegisterFilter</filter-class>
+  </filter>
+  <filter-mapping>
+    <filter-name>RegisterFilter</filter-name>
+    <url-pattern>/register.jsp</url-pattern>
+  </filter-mapping>
 </web-app>

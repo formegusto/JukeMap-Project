@@ -1,7 +1,5 @@
 package com.jukemap.view.user;
 
-import java.io.IOException;
-
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,23 +15,12 @@ public class UserController {
 	@Autowired
 	UserService userService;
 	
-	// 로그인 실패
-	@RequestMapping(value="/loginFail.do")
-	public String loginFail(Model model) throws IOException {
-		System.out.println("[Spring Service MVC Framework] 로그인 실패 기능 처리");
-		
-		String msg = "잘못된 접근 입니다.";
-		model.addAttribute("msg", msg);
-		
-		return "login.jsp";
-	}
-	
 	// 로그인 기능
 	@RequestMapping(value="/logout.do")
 	public String logout(UserVO vo, HttpSession session,
 			Model model) {
 		System.out.println("[Spring Service MVC Framework] 로그아웃 기능 처리");
-
+		
 		session.removeAttribute("user");
 		return "redirect:login.jsp";
 	}
@@ -57,10 +44,18 @@ public class UserController {
 	
 	// 가입 기능
 	@RequestMapping(value="/register.do")
-	public String register(UserVO vo, HttpSession session) {
+	public String register(UserVO vo, HttpSession session,
+			Model model) {
 		System.out.println("[Spring Service MVC Framework] 가입 기능 처리");
-		userService.insertUser(vo);
-		session.setAttribute("user", vo);
+		
+		if(vo.getId() == null || vo.getName() == null || vo.getPassword() == null) {
+			String msg = "잘못된 접근 입니다.";
+			model.addAttribute("msg", msg);
+		} else {
+			userService.insertUser(vo);
+			session.setAttribute("user", vo);
+		}
+		
 		return "login.jsp";
 	}
 }

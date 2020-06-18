@@ -20,7 +20,6 @@
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
 <script src="//cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js"></script>
 <script src="//cdn.datatables.net/1.10.21/js/dataTables.bootstrap4.min.js"></script>
-
 <script>
 	$(document).ready(function(){
 		$("#myTable").DataTable({
@@ -59,6 +58,15 @@
 
 <!-- WebSocket - Community 기능 -->
 <script>
+	function isMobile(){
+	var UserAgent = navigator.userAgent;
+		if (UserAgent.match(/iPad|iPhone|iPod|Android|Windows CE|BlackBerry|Symbian|Windows Phone|webOS|Opera Mini|Opera Mobi|POLARIS|IEMobile|lgtelecom|nokia|SonyEricsson/i) != null || UserAgent.match(/LG|SAMSUNG|Samsung/) != null)
+		{
+			return true;
+		}else{
+			return false;
+		}
+	}
 	function showToast(msg){
 		var toast = document.getElementById('toastMsg');
 		toast.innerHTML = msg;
@@ -71,20 +79,31 @@
 			isToastShown = false;
 		}, 2700);
 	}
-	if( window.location.protocol == 'http:' ){
+	var webSocket;
+	
+	// 프로토콜 확인에 따른 웹소켓 요청형태
+	if( window.location.protocol == 'http:'){
 		alert('HTTP에서는 위치서비스가 제공되지 않습니다.')
-		var webSocket = new WebSocket('ws://' + window.location.host + '/jukemap/community.do');
+		webSocket = new WebSocket('ws://' + window.location.host + '/jukemap/community.do');
 	} else {
-		var webSocket = new WebSocket('wss://' + window.location.host + '/jukemap/community.do');
+		webSocket = new WebSocket('wss://' + window.location.host + '/jukemap/community.do');
+	}
+	
+	if(isMobile() && window.location.protocol == 'http:'){
+		alert("Mobile: Community Mode");
 	}
 	
 	var id = '${user.id}';
 	
+	// 웹소켓 관련 작업
     webSocket.onopen = function(event) {
         onOpen(event)
     };
     webSocket.onclose = function(event) {
         onClose(event)
+    };
+    webSocket.onerror = function(event) {
+        onError(event)
     };
     webSocket.onmessage = function(event) {
         onMessage(event)
@@ -99,15 +118,17 @@
         if(messageType == "onlikey"){
         	//alert("onlikey 들옴");
         	var lseq = message[2];
+        	$("#jukeLike-"+seq).html(parseInt($("#jukeLike-"+seq).html()) + 1);
         	$("#likeyBtn-"+seq).removeAttr("onclick");
-        	$("#likeyBtn-"+seq).attr("onclick","offLikey(+"+lseq+")");
+        	$("#likeyBtn-"+seq).attr("onclick","offLikey("+lseq+")");
         	$("#likeyBtn-"+seq).html("<i class='fas fa-heart fa-2x'></i>");
         	showToast('좋아요가 반영되었습니다.');
         } 
         else if(messageType == "offlikey"){
         	//alert("offlikey 들옴");
+        	$("#jukeLike-"+seq).html(parseInt($("#jukeLike-"+seq).html()) - 1);
         	$("#likeyBtn-"+seq).removeAttr("onclick");
-        	$("#likeyBtn-"+seq).attr("onclick","onLikey(+"+seq+")");
+        	$("#likeyBtn-"+seq).attr("onclick","onLikey("+seq+")");
         	$("#likeyBtn-"+seq).html("<i class='far fa-heart fa-2x'></i>");
         	showToast('좋아요가 취소되었습니다.');
         }
@@ -125,7 +146,7 @@
         	
         	
         	$("#bookmarkBtn-"+seq).removeAttr("onclick");
-        	$("#bookmarkBtn-"+seq).attr("onclick","offBookmark(+"+bmseq+")");
+        	$("#bookmarkBtn-"+seq).attr("onclick","offBookmark("+bmseq+")");
         	$("#bookmarkBtn-"+seq).html("<i class='fas fa-bookmark fa-2x'></i>");
         	
             var newRow = $('#bookmarkTable').DataTable().row.add([
@@ -137,24 +158,28 @@
         		jseq + '\',\'' + title + '\',\'' + writer + '\',\'' + content + '\',\'' + lat + '\',\'' + 
         		lon + '\')"><i class="far fa-file-alt fa-2x"></i></a>'
             ]).draw(false).node();
-            $(newRow).attr("id","bookmarkTr-" + jseq);
+            $(newRow).attr("id","bookmarkTr-" + bmseq);
             showToast('북마크 목록에 저장했습니다.');
         }
         else if(messageType == "offbookmark"){
         	//alert("offbookmark 들옴");
+        	var bmseq = message[2];
         	$("#bookmarkBtn-"+seq).removeAttr("onclick");
         	$("#bookmarkBtn-"+seq).attr("onclick","onBookmark(+"+seq+")");
         	$("#bookmarkBtn-"+seq).html("<i class='far fa-bookmark fa-2x'></i>");
         	
-        	$("#bookmarkTable").DataTable().row('#bookmarkTr-' + seq).remove().draw(false);
+        	$("#bookmarkTable").DataTable().row('#bookmarkTr-' + bmseq).remove().draw(false);
         	showToast('북마크 목록에서 삭제했습니다.');
         }
     };
-    
     function onOpen(event) {
     };
     function onClose(event) {
+    	webSocket.close();
     };
+    function onError(event) {
+    };
+    
     function onLikey(seq){
     	webSocket.send("onlikey|" + seq + "|" + id);
     };
@@ -172,9 +197,26 @@
     	var fileName = fileValue[fileValue.length-1];
     	$("#fileNameLabel").html(fileName);
     }
+    
+    // 종료시 웹소켓 정상 종료 처리
+    function logout(){
+    	webSocket.close();
+    	location.href='logout.do';
+    }
+    function reload(){
+    	webSocket.close();
+    	location.href='jukeMap.do';
+    }
+    function insertJuke(){
+    	webSocket.close();
+    	newMarker.submit();
+    }
+    window.onunload = function() {
+        webSocket.close();
+  	}
 </script>
 
-<div id="toastMsg">좋아요가 반영되었습니다.</div>
+<div id="toastMsg"></div>
 
 <nav class="navbar navbar-dark bg-primary">
 	<a class="navbar-brand" href="#">JukeMap</a>
@@ -182,8 +224,8 @@
 		<button type="button" class="btn btn-primary" onclick="audio.play()"><i class="fas fa-play"></i></button>
 		<button type="button" class="btn btn-primary" onclick="audio.pause()"><i class="fas fa-pause"></i></button>
 		<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#jukeAdd"><i class="fas fa-plus"></i></button>
-		<button type="button" class="btn btn-primary" onclick="location.href='jukeMap.do'"><i class="fas fa-redo-alt"></i></button>
-		<button type="button" class="btn btn-primary" onclick="location.href='logout.do'"><i class="fas fa-power-off"></i></button>
+		<button type="button" class="btn btn-primary" onclick="reload()"><i class="fas fa-redo-alt"></i></button>
+		<button type="button" class="btn btn-primary" onclick="logout()"><i class="fas fa-power-off"></i></button>
 	</div>
 </nav>
 
@@ -243,7 +285,7 @@
         	<td>${juke.jseq }</td>
         	<td>${juke.title }</td>
         	<td>${juke.id }</td>
-        	<td>${juke.likey }</td>
+        	<td id="jukeLike-${juke.jseq }">${juke.likey }</td>
         	<td>
         	<c:choose>
         		<c:when test="${juke.jseq eq bmList[bmNum].jseq }">
@@ -372,7 +414,7 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary" onclick="newMarker.submit()">Register Marker</button>
+        <button type="button" class="btn btn-primary" onclick="insertJuke()">Register Marker</button>
       </div>
     </div>
   </div>

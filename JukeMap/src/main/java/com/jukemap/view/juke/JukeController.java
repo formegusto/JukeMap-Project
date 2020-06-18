@@ -71,7 +71,9 @@ public class JukeController {
 		for(BookmarkVO bm : bmList) {
 			JukeVO juke = new JukeVO();
 			juke.setJseq(bm.getJseq());
-			jbmList.add(jukeService.getJuke(juke));
+			JukeVO bjuke = jukeService.getJuke(juke);
+			bjuke.setJseq(bm.getBmseq());
+			jbmList.add(bjuke);
 		}
 		
 		model.addAttribute("ujukeList", jukeService.getJukeList(jvo));

@@ -66,10 +66,11 @@ public class WebSocketCommunity {
 					String bmseq = message.split("\\|")[1];
 					BookmarkVO vo = new BookmarkVO();
 					vo.setBmseq(Integer.parseInt(bmseq));
-					int seq = bookmarkService.getBM(vo).getJseq();
+					int jseq = bookmarkService.getBM(vo).getJseq();
+					int bseq = bookmarkService.getBM(vo).getBmseq();
 					bookmarkService.deleteBM(vo);
 					System.out.println("[Server] deleteBM");
-					message = messageType + "|" + seq;
+					message = messageType + "|" + jseq + "|" + bseq;
 				} else if(messageType.equals("onlikey")) {
 					String seq = message.split("\\|")[1];
 					String id = message.split("\\|")[2];
