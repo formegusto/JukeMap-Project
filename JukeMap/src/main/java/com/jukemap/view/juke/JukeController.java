@@ -84,4 +84,40 @@ public class JukeController {
 		
 		return "jukeMap.jsp";
 	}
+	
+	@RequestMapping(value="/jukeMapDis.do")
+	public String jukeMapDis(JukeVO vo, HttpSession session,
+			Model model) {
+		UserVO user = (UserVO)session.getAttribute("user");
+		
+		System.out.println(user.getId());
+		
+		JukeVO jvo = new JukeVO();
+		jvo.setId(user.getId());
+		
+		BookmarkVO bvo = new BookmarkVO();
+		bvo.setId(user.getId());
+		
+		LikeyVO lvo = new LikeyVO();
+		lvo.setId(user.getId());
+		
+		List<BookmarkVO> bmList = bookmarkService.getBMList(bvo);
+		List<JukeVO> jbmList = new ArrayList<JukeVO>();
+		for(BookmarkVO bm : bmList) {
+			JukeVO juke = new JukeVO();
+			juke.setJseq(bm.getJseq());
+			JukeVO bjuke = jukeService.getJuke(juke);
+			bjuke.setJseq(bm.getBmseq());
+			jbmList.add(bjuke);
+		}
+		
+		model.addAttribute("ujukeList", jukeService.getJukeList(jvo));
+		model.addAttribute("likeyList", likeyService.getLikeyList(lvo));
+		model.addAttribute("jukeList", jukeService.getJukeListDis(vo));
+		model.addAttribute("mode", "dis");
+		model.addAttribute("bmList", bmList);
+		model.addAttribute("jbmList", jbmList);
+		
+		return "jukeMap.jsp";
+	}
 }

@@ -66,6 +66,12 @@ public class JukeServiceImpl implements JukeService {
 		// TODO Auto-generated method stub
 		return jukeDAO.getJukeList(vo);
 	}
+	
+	@Override
+	public List<JukeVO> getJukeListDis(JukeVO vo) {
+		// TODO Auto-generated method stub
+		return jukeDAO.getJukeListDis(vo);
+	}
 
 	@Override
 	public List<JukeVO> getMarkerList(JukeVO vo) {

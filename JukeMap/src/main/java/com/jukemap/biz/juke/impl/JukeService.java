@@ -15,6 +15,7 @@ public interface JukeService {
 	public List<JukeVO> getJukeList(JukeVO vo);
 	public JukeVO getJukeRandom(JukeVO vo);
 	public List<JukeVO> getJukeListMax(JukeVO vo);
+	public List<JukeVO> getJukeListDis(JukeVO vo);
 	// 마커 조회
 	public List<JukeVO> getMarkerList(JukeVO vo);
 }

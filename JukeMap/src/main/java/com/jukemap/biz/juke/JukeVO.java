@@ -11,6 +11,7 @@ public class JukeVO {
 	private String content;
 	private int likey;
 	private Date regdate;
+	private double dis;
 
 	public int getJseq() {
 		return jseq;
@@ -60,10 +61,16 @@ public class JukeVO {
 	public void setRegdate(Date regdate) {
 		this.regdate = regdate;
 	}
-
+	public double getDis() {
+		return dis;
+	}
+	public void setDis(double dis) {
+		this.dis = dis;
+	}
+	
 	@Override
 	public String toString() {
 		return "JukeVO [jseq=" + jseq + ", lat=" + lat + ", lon=" + lon + ", id=" + id + ", title=" + title
-				+ ", content=" + content + ", likey=" + likey + ", regdate=" + regdate + "]";
+				+ ", content=" + content + ", likey=" + likey + ", regdate=" + regdate + ", dis=" + dis + "]";
 	}
 }

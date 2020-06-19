@@ -217,6 +217,17 @@
     window.onunload = function() {
         webSocket.close();
   	}
+    function jukeDisLoad(){
+    	 navigator.geolocation.getCurrentPosition(function(position) {
+    	        var lat = position.coords.latitude, // 위도
+    	            lon = position.coords.longitude; // 경도
+    	       
+    	            document.getElementsByName('lat')[0].value = lat;
+    	            document.getElementsByName('lon')[0].value = lon;
+    	            
+    	            jukeMapDis.submit();
+    	      });
+    }
 </script>
 
 <div id="toastMsg"></div>
@@ -228,9 +239,16 @@
 		<button type="button" class="btn btn-primary" onclick="audio.pause()"><i class="fas fa-pause"></i></button>
 		<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#jukeAdd"><i class="fas fa-plus"></i></button>
 		<button type="button" class="btn btn-primary" onclick="reload()"><i class="fas fa-redo-alt"></i></button>
+		<button type="button" class="btn btn-primary" onclick="jukeDisLoad()"><i class="fas fa-street-view"></i></button>
 		<button type="button" class="btn btn-primary" onclick="logout()"><i class="fas fa-power-off"></i></button>
 	</div>
 </nav>
+
+<!-- jukeDisForm -->
+<form action="jukeMapDis.do" method="post" name="jukeMapDis">
+	<input type="hidden" name="lat"/>
+	<input type="hidden" name="lon"/>
+</form>
 
 <!-- 지도 -->
 <div id="map" style="width:100%;height:350px;"></div>
@@ -275,6 +293,9 @@
         <thead class="thead-light">
             <tr>
             	<th>seq</th>
+            	<c:if test="${mode ne '' and !empty mode and mode ne null}">
+	        	<th>dis</th>
+				</c:if>
                 <th>Title</th>
                 <th>Writer</th>
                 <th>Likey</th>
@@ -287,6 +308,9 @@
         <c:forEach items="${jukeList }" var="juke">
         <tr>
         	<td>${juke.jseq }</td>
+        	<c:if test="${juke.dis ne '' and !empty juke.dis and juke.dis ne null}">
+        	<td>${juke.dis }</td>
+			</c:if>
         	<td>${juke.title }</td>
         	<td>${juke.id }</td>
         	<td id="jukeLike-${juke.jseq }">${juke.likey }</td>

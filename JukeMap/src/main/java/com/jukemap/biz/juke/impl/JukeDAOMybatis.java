@@ -59,6 +59,11 @@ public class JukeDAOMybatis {
 		return mybatis.selectList("JukeDAO.getJukeList", vo);
 	}
 	
+	public List<JukeVO> getJukeListDis(JukeVO vo){
+		System.out.println("===> Mybatis로 getJukeListDis() 마커 조회 기능 처리");
+		return mybatis.selectList("JukeDAO.getJukeListDis", vo);
+	}
+	
 	// 마커 조회
 	public List<JukeVO> getMarkerList(JukeVO vo){
 		System.out.println("===> Mybatis로 getMarkerList() 마커리스트 조회 기능 처리");

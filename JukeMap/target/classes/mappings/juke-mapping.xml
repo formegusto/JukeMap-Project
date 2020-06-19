@@ -69,6 +69,15 @@
 		ORDER BY RAND() LIMIT 3
 	]]>
 	</select>
+	<select id="getJukeListDis" resultType="juke">
+	<![CDATA[
+		SELECT *,
+			(6371*ACOS(COS(radians(#{lat}))*COS(radians(lat))*COS(radians(lon)
+			-RADIANS(#{lon}))+SIN(RADIANS(#{lat}))*SIN(RADIANS(lat)))) AS dis
+		FROM JUKE
+		ORDER BY dis;
+	]]>
+	</select>
 	<select id="getMarkerList" resultType="juke">
 	<![CDATA[
 		SELECT *
