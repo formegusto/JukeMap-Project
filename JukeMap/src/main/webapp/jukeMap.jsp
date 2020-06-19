@@ -158,7 +158,9 @@
             	likey,
             	'<a href="#" data-toggle="modal" data-target="#boardDetail" style="color: black;" onclick="boardDetail(\'' +
         		jseq + '\',\'' + title + '\',\'' + writer + '\',\'' + content + '\',\'' + lat + '\',\'' + 
-        		lon + '\')"><i class="far fa-file-alt fa-2x"></i></a>'
+        		lon + '\')"><i class="far fa-file-alt fa-2x"></i></a> ' +
+        		'<a href="#" style="color: black;" onclick="changeCenter(\'' + lat + '\',\'' + lon + '\'' +
+        		')"><i class="fas fa-map-marker fa-2x"></i></a>'
             ]).draw(false).node();
             $(newRow).attr("id","bookmarkTr-" + bmseq);
             showToast('북마크 목록에 저장했습니다.');
@@ -252,6 +254,7 @@
         	<td>${ujuke.likey }</td>
         	<td>
                 <a href="#" data-toggle="modal" data-target="#boardDetail" style="color: black;" onclick="boardDetail('${ujuke.jseq }','${ujuke.title }','${ujuke.id }','${ujuke.content}','${ujuke.lat }','${ujuke.lon }')"><i class="far fa-file-alt fa-2x"></i></a>
+            	<a href="#" style="color: black;" onclick="changeCenter('${ujuke.lat }','${ujuke.lon }')"><i class="fas fa-map-marker fa-2x"></i></a>
             </td>
         </tr>
         </c:forEach>
@@ -307,6 +310,7 @@
         		</c:otherwise>
         	</c:choose>
                 <a href="#" data-toggle="modal" data-target="#boardDetail" style="color: black;" onclick="boardDetail('${juke.jseq }','${juke.title }','${juke.id }','${juke.content}','${juke.lat }','${juke.lon }')"><i class="far fa-file-alt fa-2x"></i></a>
+                <a href="#" style="color: black;" onclick="changeCenter('${juke.lat }','${juke.lon }')"><i class="fas fa-map-marker fa-2x"></i></a>
             </td>
         </tr>
         </c:forEach>
@@ -333,6 +337,7 @@
         	<td>${jbm.likey }</td>
         	<td>
                 <a href="#" data-toggle="modal" data-target="#boardDetail" style="color: black;" onclick="boardDetail('${jbm.jseq }','${jbm.title }','${jbm.id }','${jbm.content}','${jbm.lat }','${jbm.lon }')"><i class="far fa-file-alt fa-2x"></i></a>
+            	<a href="#" style="color: black;" onclick="changeCenter('${jbm.lat }','${jbm.lon }')"><i class="fas fa-map-marker fa-2x"></i></a>
             </td>
         </tr>
         </c:forEach>
@@ -497,43 +502,40 @@ function displayMarker(locPosition, message) {
 <!-- MapMarker -->
 <script>
 	<c:forEach items="${jukeList }" var="juke">
-		navigator.geolocation.getCurrentPosition(function(position) {
-		   	// 마커 생성
-		   var lat = ${juke.lat }, // 위도
-		       lon = ${juke.lon}; // 경도
-		       
-		   var locPosition = new kakao.maps.LatLng(lat, lon); // 마커가 표시될 위치를 geolocation으로 얻어온 좌표로 생성합니다
-		        
-		   var marker = new kakao.maps.Marker({  
-		       map: map, 
-		       position: locPosition
-		   });
-		   
-		   marker.setMap(map);
-		   
-		   var jseq = ${juke.jseq};
-		   var content = "${juke.content}";
-		   // 마커에 이벤트 등록
-		   // 마커를 클릭했을 때 마커 위에 표시할 인포윈도우를 생성합니다 
-		   var iwContent = '<div style="padding:15px; width:250px; overflow:hidden; word-break:break-all;">' + content + '<br/>' + 
-		   		'<button type="button" class="btn btn-primary" onclick="window.open(\'https://map.kakao.com/link/to/' + content + ',' + lat + ',' + lon + '\')"><i class="fas fa-route"></i></button>' + 
-		   		'<button type="button" class="btn btn-primary" onclick="audioMapPlay(' + jseq + ')"><i class="fas fa-play"></i></button>' + 
-		   		'</div>', // 인포윈도우에 표출될 내용으로 HTML 문자열이나 document element가 가능합니다
-		       iwRemoveable = true; // removeable 속성을 ture 로 설정하면 인포윈도우를 닫을 수 있는 x버튼이 표시됩니다
-
+	navigator.geolocation.getCurrentPosition(function(position) {
+	   	// 마커 생성
+	   var lat = ${juke.lat }, // 위도
+	       lon = ${juke.lon}; // 경도
+	       
+	   var locPosition = new kakao.maps.LatLng(lat, lon); // 마커가 표시될 위치를 geolocation으로 얻어온 좌표로 생성합니다
+	        
+	   var marker = new kakao.maps.Marker({  
+	       map: map, 
+	       position: locPosition
+	   });
+	   
+	   marker.setMap(map);
+	   
+	   var jseq = ${juke.jseq};
+	   var content = "${juke.content}";
+	   // 마커에 이벤트 등록
+	   // 마커를 클릭했을 때 마커 위에 표시할 인포윈도우를 생성합니다 
+	   var iwContent = '<div style="padding:15px; width:250px; overflow:hidden; word-break:break-all;">' + content + '<br/>' + 
+	   		'<button type="button" class="btn btn-primary" onclick="window.open(\'https://map.kakao.com/link/to/' + content + ',' + lat + ',' + lon + '\')"><i class="fas fa-route"></i></button>' + 
+	   		'<button type="button" class="btn btn-primary" onclick="audioMapPlay(' + jseq + ')"><i class="fas fa-play"></i></button>' + 
+	   		'</div>', // 인포윈도우에 표출될 내용으로 HTML 문자열이나 document element가 가능합니다
+       iwRemoveable = true; // removeable 속성을 true 로 설정하면 인포윈도우를 닫을 수 있는 x버튼이 표시됩니다
 		   // 인포윈도우를 생성합니다
-		   var infowindow = new kakao.maps.InfoWindow({
+	   var infowindow = new kakao.maps.InfoWindow({
 		       content : iwContent,
-		       removable : iwRemoveable
-		   });
-
+       		removable : iwRemoveable
+	   });
 		   // 마커에 클릭이벤트를 등록합니다
-		   kakao.maps.event.addListener(marker, 'click', function() {
-		         // 마커 위에 인포윈도우를 표시합니다
-		         infowindow.open(map, marker);  
-		   });
-		});
-		
+	   kakao.maps.event.addListener(marker, 'click', function() {
+	         // 마커 위에 인포윈도우를 표시합니다
+	         infowindow.open(map, marker);  
+	   });
+	});
 	</c:forEach>
 	function boardDetail(seq,title,id,content,lat,lon){
     	$("#boardDetailTitle").html(title);
@@ -544,8 +546,11 @@ function displayMarker(locPosition, message) {
     	});
     	audioSeq = seq;
     }
+	
+	function changeCenter(lat,lng){
+		map.setCenter(new kakao.maps.LatLng(lat, lng));
+		showToast('중심좌표를 변경했습니다.');
+	}
 </script>
-
-
 </body>
 </html>
