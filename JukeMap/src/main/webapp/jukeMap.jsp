@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=EUC-KR"
     pageEncoding="EUC-KR"%>
 <%@ taglib uri="http://java.sun.com/jstl/core_rt" prefix="c" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -309,7 +310,7 @@
         <tr>
         	<td>${juke.jseq }</td>
         	<c:if test="${juke.dis ne '' and !empty juke.dis and juke.dis ne null}">
-        	<td>${juke.dis }</td>
+        	<td><fmt:formatNumber value="${juke.dis }" pattern=".000"/></td>
 			</c:if>
         	<td>${juke.title }</td>
         	<td>${juke.id }</td>
