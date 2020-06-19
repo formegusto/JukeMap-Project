@@ -12,6 +12,7 @@
 <link rel="stylesheet" type="text/css" href="//cdn.datatables.net/1.10.21/css/dataTables.bootstrap4.min.css">
 <link rel="stylesheet" type="text/css" href="resources/css/toast.css">
 <link rel="icon" type="image/png" href="resources/images/icons/favicon.ico"/>
+<link href="https://fonts.googleapis.com/css2?family=Nanum+Pen+Script&display=swap" rel="stylesheet">
 <script defer src="resources/fontawesome/js/all.js"></script>
 </head>
 <body>
@@ -219,7 +220,7 @@
 <div id="toastMsg"></div>
 
 <nav class="navbar navbar-dark bg-primary">
-	<a class="navbar-brand" href="#">JukeMap</a>
+	<a class="navbar-brand" href="#"><font size="5px" style="font-family: 'Nanum Pen Script', cursive;">From JukeMap, 당신의 감성을 응원합니다:)</font></a>
 	<div class="btn-group" role="group" aria-label="Basic example">
 		<button type="button" class="btn btn-primary" onclick="audio.play()"><i class="fas fa-play"></i></button>
 		<button type="button" class="btn btn-primary" onclick="audio.pause()"><i class="fas fa-pause"></i></button>
