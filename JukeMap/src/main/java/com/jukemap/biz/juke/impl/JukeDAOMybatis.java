@@ -39,6 +39,21 @@ public class JukeDAOMybatis {
 		return mybatis.selectOne("JukeDAO.getJuke", vo);
 	}
 	
+	public JukeVO getJukeIdAndSeq(JukeVO vo) {
+		System.out.println("===> Mybatis로 getJukeIdAndSeq() 마커 조회 기능 처리");
+		return mybatis.selectOne("JukeDAO.getJukeIdAndSeq", vo);
+	}
+	
+	public JukeVO getJukeRandom(JukeVO vo) {
+		System.out.println("===> Mybatis로 getJukeRandom() 마커 조회 기능 처리");
+		return mybatis.selectOne("JukeDAO.getJukeRandom", vo);
+	}
+	
+	public List<JukeVO> getJukeListMax(JukeVO vo){
+		System.out.println("===> Mybatis로 getJukeListMax() 마커 조회 기능 처리");
+		return mybatis.selectList("JukeDAO.getJukeListMax", vo);
+	}
+	
 	public List<JukeVO> getJukeList(JukeVO vo){
 		System.out.println("===> Mybatis로 getJukeList() 마커 조회 기능 처리");
 		return mybatis.selectList("JukeDAO.getJukeList", vo);

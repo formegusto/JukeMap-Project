@@ -44,6 +44,24 @@ public class JukeServiceImpl implements JukeService {
 	}
 	
 	@Override
+	public JukeVO getJukeIdAndSeq(JukeVO vo) {
+		// TODO Auto-generated method stub
+		return jukeDAO.getJukeIdAndSeq(vo);
+	}
+
+	@Override
+	public JukeVO getJukeRandom(JukeVO vo) {
+		// TODO Auto-generated method stub
+		return jukeDAO.getJukeRandom(vo);
+	}
+
+	@Override
+	public List<JukeVO> getJukeListMax(JukeVO vo) {
+		// TODO Auto-generated method stub
+		return jukeDAO.getJukeListMax(vo);
+	}
+
+	@Override
 	public List<JukeVO> getJukeList(JukeVO vo) {
 		// TODO Auto-generated method stub
 		return jukeDAO.getJukeList(vo);

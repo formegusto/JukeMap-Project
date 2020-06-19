@@ -17,6 +17,12 @@ public class UserDAOMybatis {
 		mybatis.insert("UserDAO.insertUser",vo);
 	}
 	
+	// 회원 조회 처리(ID)
+	public UserVO getUserId(UserVO vo) {
+		System.out.println("===> Mybatis로 getUserId() 조회 기능 처리");
+		return mybatis.selectOne("UserDAO.getUserId", vo);
+	}
+	
 	// 회원 조회 처리
 	public UserVO getUser(UserVO vo) {
 		System.out.println("===> Mybatis로 getUser() 조회 기능 처리");

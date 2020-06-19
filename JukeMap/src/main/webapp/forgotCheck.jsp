@@ -4,14 +4,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<c:if test="${msg ne '' and !empty msg and msg ne null}">
-		<script>
-			var msg = "${msg}"
-			alert(msg)
-		</script>
-	</c:if>
-	
-	<title>JukeMap Login</title>
+	<title>JukeMap Forgot Password Page</title>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 <!--===============================================================================================-->	
@@ -42,9 +35,9 @@
 	<div class="limiter">
 		<div class="container-login100">
 			<div class="wrap-login100 p-l-55 p-r-55 p-t-65 p-b-50">
-				<form method="post" action="login.do" class="login100-form validate-form">
+				<form method="post" action="forgotCheck.do" class="login100-form validate-form" name="form">
 					<span class="login100-form-title p-b-33">
-						Account Login
+						We Need Your ID
 					</span>
 
 					<div class="wrap-input100 validate-input">
@@ -53,36 +46,15 @@
 						<span class="focus-input100-2"></span>
 					</div>
 
-					<div class="wrap-input100 rs1 validate-input" data-validate="Password is required">
-						<input class="input100" type="password" name="password" placeholder="your pw">
-						<span class="focus-input100-1"></span>
-						<span class="focus-input100-2"></span>
-					</div>
-
 					<div class="container-login100-form-btn m-t-20">
 						<button class="login100-form-btn">
-							Sign in
+							Quiz For Search Your Password
 						</button>
 					</div>
-
-					<div class="text-center p-t-45 p-b-4">
-						<span class="txt1">
-							Forgot
-						</span>
-
-						<a href="forgotCheck.jsp" class="txt2 hov1">
-							Password?
-						</a>
-					</div>
-
-					<div class="text-center">
-						<span class="txt1">
-							Create an account?
-						</span>
-
-						<a href="register.jsp" class="txt2 hov1">
-							Sign up
-						</a>
+					<div class="container-login100-form-btn m-t-20">
+						<button class="login100-form-btn" onclick="form.action='login.jsp'; form.submit()">
+							Return
+						</button>
 					</div>
 				</form>
 			</div>

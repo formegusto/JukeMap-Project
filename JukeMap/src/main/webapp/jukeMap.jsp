@@ -84,6 +84,7 @@
 	// 프로토콜 확인에 따른 웹소켓 요청형태
 	if( window.location.protocol == 'http:'){
 		alert('HTTP에서는 위치서비스가 제공되지 않습니다.')
+		alert(window.location.host);
 		webSocket = new WebSocket('ws://' + window.location.host + '/jukemap/community.do');
 	} else {
 		webSocket = new WebSocket('wss://' + window.location.host + '/jukemap/community.do');
@@ -175,7 +176,6 @@
     function onOpen(event) {
     };
     function onClose(event) {
-    	webSocket.close();
     };
     function onError(event) {
     };

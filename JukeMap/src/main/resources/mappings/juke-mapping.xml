@@ -37,12 +37,36 @@
 		WHERE JSEQ=#{jseq}
 	]]>
 	</select>
+	<select id="getJukeIdAndSeq" resultType="juke">
+	<![CDATA[
+		SELECT *
+		FROM JUKE
+		WHERE JSEQ=#{jseq}
+		AND ID=#{id}
+	]]>
+	</select>
+	<select id="getJukeRandom" resultType="juke">
+	<![CDATA[
+		SELECT *
+		FROM JUKE
+		WHERE ID!=#{id}
+		ORDER BY RAND() LIMIT 1
+	]]>
+	</select>
 	<select id="getJukeList" resultType="juke">
 	<![CDATA[
 		SELECT *
 		FROM JUKE
 		WHERE ID=#{id}
 		ORDER BY JSEQ DESC
+	]]>
+	</select>
+	<select id="getJukeListMax" resultType="juke">
+	<![CDATA[
+		SELECT *
+		FROM JUKE
+		WHERE ID=#{id}
+		ORDER BY RAND() LIMIT 3
 	]]>
 	</select>
 	<select id="getMarkerList" resultType="juke">

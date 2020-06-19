@@ -59,4 +59,22 @@
     <filter-name>RegisterFilter</filter-name>
     <url-pattern>/register.jsp</url-pattern>
   </filter-mapping>
+  <filter>
+    <display-name>ForgotCheckFilter</display-name>
+    <filter-name>ForgotCheckFilter</filter-name>
+    <filter-class>com.jukemap.filter.ForgotCheckFilter</filter-class>
+  </filter>
+  <filter-mapping>
+    <filter-name>ForgotCheckFilter</filter-name>
+    <url-pattern>/forgotCheck.jsp</url-pattern>
+  </filter-mapping>
+  <filter>
+    <display-name>ForgotQuizFilter</display-name>
+    <filter-name>ForgotQuizFilter</filter-name>
+    <filter-class>com.jukemap.filter.ForgotQuizFilter</filter-class>
+  </filter>
+  <filter-mapping>
+    <filter-name>ForgotQuizFilter</filter-name>
+    <url-pattern>/forgotQuiz.jsp</url-pattern>
+  </filter-mapping>
 </web-app>

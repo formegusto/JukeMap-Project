@@ -11,7 +11,10 @@ public interface JukeService {
 	public void downLikey(JukeVO vo);
 	public Integer getJukeTopnum();
 	public JukeVO getJuke(JukeVO vo);
+	public JukeVO getJukeIdAndSeq(JukeVO vo);
 	public List<JukeVO> getJukeList(JukeVO vo);
+	public JukeVO getJukeRandom(JukeVO vo);
+	public List<JukeVO> getJukeListMax(JukeVO vo);
 	// 마커 조회
 	public List<JukeVO> getMarkerList(JukeVO vo);
 }
