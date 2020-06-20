@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="MessageDAO">
+	<insert id="insertMsg">
+	<![CDATA[
+		INSERT INTO MESSAGE(mseq,toid,fromid,msg)
+		VALUES ((SELECT ifnull(max(mseq), 0) + 1 FROM MESSAGE a),
+		#{toid}, #{fromid}, #{msg})
+	]]>
+	</insert>
+	<select id="getMsgList" resultType="msg">
+	<![CDATA[
+		SELECT *
+		FROM MESSAGE
+		WHERE TOID=#{toid}
+	]]>
+	</select>
+	<select id="getMsgTop" resultType="msg">
+	<![CDATA[
+		SELECT *
+		FROM MESSAGE
+		ORDER BY MSEQ DESC LIMIT 1
+	]]>
+	</select>
+</mapper>

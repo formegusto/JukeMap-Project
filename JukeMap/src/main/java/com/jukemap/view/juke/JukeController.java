@@ -20,6 +20,8 @@ import com.jukemap.biz.juke.JukeVO;
 import com.jukemap.biz.juke.impl.JukeService;
 import com.jukemap.biz.likey.LikeyVO;
 import com.jukemap.biz.likey.impl.LikeyService;
+import com.jukemap.biz.message.MessageVO;
+import com.jukemap.biz.message.impl.MessageService;
 import com.jukemap.biz.user.UserVO;
 
 @Controller
@@ -30,6 +32,8 @@ public class JukeController {
 	BookmarkService bookmarkService;
 	@Autowired
 	LikeyService likeyService;
+	@Autowired
+	MessageService messageSerivce;
 	
 	@RequestMapping(value="/jukeMarkerAdd_proc.do")
 	public String jukeMarkerAdd(JukeVO vo, 
@@ -76,6 +80,10 @@ public class JukeController {
 			jbmList.add(bjuke);
 		}
 		
+		MessageVO mvo = new MessageVO();
+		mvo.setToid(user.getId());
+		
+		model.addAttribute("msgList",  messageSerivce.getMsgList(mvo));
 		model.addAttribute("ujukeList", jukeService.getJukeList(jvo));
 		model.addAttribute("likeyList", likeyService.getLikeyList(lvo));
 		model.addAttribute("jukeList", jukeService.getMarkerList(vo));
@@ -111,12 +119,18 @@ public class JukeController {
 			jbmList.add(bjuke);
 		}
 		
+		MessageVO mvo = new MessageVO();
+		mvo.setToid(user.getId());
+		
+		model.addAttribute("msgList",  messageSerivce.getMsgList(mvo));
 		model.addAttribute("ujukeList", jukeService.getJukeList(jvo));
 		model.addAttribute("likeyList", likeyService.getLikeyList(lvo));
 		model.addAttribute("jukeList", jukeService.getJukeListDis(vo));
 		model.addAttribute("mode", "dis");
 		model.addAttribute("bmList", bmList);
 		model.addAttribute("jbmList", jbmList);
+		
+		System.out.println(jukeService.getJukeListDis(vo));
 		
 		return "jukeMap.jsp";
 	}

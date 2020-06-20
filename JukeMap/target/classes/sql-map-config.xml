@@ -8,11 +8,13 @@
 		<typeAlias type="com.jukemap.biz.juke.JukeVO" alias="juke"/>
 		<typeAlias type="com.jukemap.biz.bookmark.BookmarkVO" alias="bm"/>
 		<typeAlias type="com.jukemap.biz.likey.LikeyVO" alias="likey"/>
+		<typeAlias type="com.jukemap.biz.message.MessageVO" alias="msg"/>
 	</typeAliases>
 	<mappers>
 		<mapper resource="mappings/users-mapping.xml"/>
 		<mapper resource="mappings/juke-mapping.xml"/>
 		<mapper resource="mappings/bookmark-mapping.xml"/>
 		<mapper resource="mappings/likey-mapping.xml"/>
+		<mapper resource="mappings/message-mapping.xml"/>
 	</mappers>
 </configuration>

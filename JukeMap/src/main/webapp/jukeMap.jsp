@@ -30,6 +30,12 @@
 			info:false,
 			paging:false
 		});
+		$("#msgTable").DataTable({
+			searching: false,
+			lengthChange:false,
+			info:false,
+			paging:false
+		});
 		$("#communityTable").DataTable({
 			searching: false,
 			lengthChange:false,
@@ -160,8 +166,10 @@
             	'<a href="#" data-toggle="modal" data-target="#boardDetail" style="color: black;" onclick="boardDetail(\'' +
         		jseq + '\',\'' + title + '\',\'' + writer + '\',\'' + content + '\',\'' + lat + '\',\'' + 
         		lon + '\')"><i class="far fa-file-alt fa-2x"></i></a> ' +
+        		'<a href="#" data-toggle="modal" data-target="#msgModal" style="color: black;" onclick="openMsgModal(\'' +
+            	writer + '\')"><i class="fas fa-envelope fa-2x"></i></a> ' +
         		'<a href="#" style="color: black;" onclick="changeCenter(\'' + lat + '\',\'' + lon + '\'' +
-        		')"><i class="fas fa-map-marker fa-2x"></i></a>'
+        		')"><i class="fas fa-map-marker fa-2x"></i></a> '
             ]).draw(false).node();
             $(newRow).attr("id","bookmarkTr-" + bmseq);
             showToast('북마크 목록에 저장했습니다.');
@@ -176,10 +184,27 @@
         	$("#bookmarkTable").DataTable().row('#bookmarkTr-' + bmseq).remove().draw(false);
         	showToast('북마크 목록에서 삭제했습니다.');
         }
+        else if(messageType == "sendmsg"){
+        	var mseq = message[1];
+        	var from = message[2];
+        	var msg = message[3];
+        	var newRow = $('#msgTable').DataTable().row.add([
+            	mseq,
+            	from,
+            	msg,
+            	'<a href="#" data-toggle="modal" data-target="#replyModal" style="color: black;" onclick="openReplyModal(\'' +
+            	from + '\')"><i class="fas fa-reply fa-2x"></i></a>'
+            ]).draw(false).node();
+        	
+        	showToast(from + '님으로 부터 메세지가 도착했습니다.');
+        }
     };
     function onOpen(event) {
+    	var id = "${user.id}";
+    	webSocket.send("inmsg|" + id);
     };
     function onClose(event) {
+    	
     };
     function onError(event) {
     };
@@ -204,18 +229,26 @@
     
     // 종료시 웹소켓 정상 종료 처리
     function logout(){
+    	var id = "${user.id}";
+    	webSocket.send("outmsg|" + id);
     	webSocket.close();
     	location.href='logout.do';
     }
     function reload(){
+    	var id = "${user.id}";
+    	webSocket.send("outmsg|" + id);
     	webSocket.close();
     	location.href='jukeMap.do';
     }
     function insertJuke(){
+    	var id = "${user.id}";
+    	webSocket.send("outmsg|" + id);
     	webSocket.close();
     	newMarker.submit();
     }
     window.onunload = function() {
+    	var id = "${user.id}";
+    	webSocket.send("outmsg|" + id);
         webSocket.close();
   	}
     function jukeDisLoad(){
@@ -228,6 +261,38 @@
     	            
     	            jukeMapDis.submit();
     	      });
+    }
+    function openMsgModal(id){
+    	$("#totext").val(id);
+    	$("#totext").html("TO : " + id);
+    }
+ 	function openReplyModal(id){
+ 		$("#reptotext").val(id);
+ 		$("#reptotext").html("TO : " + id);
+ 	}
+    function sendMsg(){
+    	var to = $("#totext").val();
+    	var from = "${user.id}";
+    	var msg = $("#msgtext").val();
+    	
+    	webSocket.send("sendmsg|" + to + "|" + from + "|" + msg);
+    	
+    	$("#msgModal").modal("hide");
+    	showToast(to + ' 님께 메세지를 전송했습니다.');
+    	
+    	$("#msgtext").val('');
+    }
+    function replyMsg(){
+    	var to = $("#reptotext").val();
+    	var from = "${user.id}";
+    	var msg = $("#reptext").val();
+    	
+    	webSocket.send("sendmsg|" + to + "|" + from + "|" + msg);
+    	
+    	$("#replyModal").modal("hide");
+    	showToast(to + ' 님께 답장을 전송했습니다.');
+    	
+    	$("#reptext").val('');
     }
 </script>
 
@@ -255,7 +320,14 @@
 <div id="map" style="width:100%;height:350px;"></div>
 
 <!-- My JukeMapList -->
-<div class="col-xs-8 col-xs-offset-2 well">
+<nav>
+  <div class="nav nav-tabs" id="nav-tab" role="tablist">
+    <a class="nav-item nav-link active" id="nav-my-tab" data-toggle="tab" href="#nav-my" role="tab" aria-controls="nav-my" aria-selected="true">My</a>
+    <a class="nav-item nav-link" id="nav-msg-tab" data-toggle="tab" href="#nav-msg" role="tab" aria-controls="nav-msg" aria-selected="false">Message</a>
+  </div>
+</nav>
+<div class="tab-content col-xs-8 col-xs-offset-2 well" id="nav-tabContent">
+	<div class="tab-pane fade show active" id="nav-my" role="tabpanel" aria-labelledby="nav-my-tab">
 	<table id="myTable" class="table table-scroll">
         <thead class="thead-light">
             <tr>
@@ -279,6 +351,31 @@
         </c:forEach>
         </tbody>
     </table>
+    </div>
+    <div class="tab-pane fade" id="nav-msg" role="tabpanel" aria-labelledby="nav-msg-tab">
+    <table id="msgTable" class="table table-scroll">
+        <thead class="thead-light">
+            <tr>
+            	<th>seq</th>
+                <th>from</th>
+                <th>message</th>
+                <th>community</th>
+            </tr>
+        </thead>
+        <tbody id="msgBody">
+        <c:forEach items="${msgList }" var="msg">
+        <tr>
+        	<td>${msg.mseq }</td>
+        	<td>${msg.fromid }</td>
+        	<td>${msg.msg }</td>
+        	<td>
+        		<a href="#" data-toggle="modal" data-target="#replyModal" style="color: black;" onclick="openReplyModal('${msg.fromid }')"><i class="fas fa-reply fa-2x"></i></a>
+        	</td>
+        </tr>
+        </c:forEach>
+        </tbody>
+    </table>
+    </div>
 </div>
 <!-- nav -->
 <nav>
@@ -309,7 +406,10 @@
         <c:forEach items="${jukeList }" var="juke">
         <tr>
         	<td>${juke.jseq }</td>
-        	<c:if test="${juke.dis ne '' and !empty juke.dis and juke.dis ne null}">
+        	<c:if test="${juke.dis eq 0.0 and (mode ne '' and !empty mode and mode ne null)}">
+        	<td>.000</td>
+        	</c:if>
+        	<c:if test="${(juke.dis ne '' and !empty juke.dis and juke.dis ne null) and (mode ne '' and !empty mode and mode ne null)}">
         	<td><fmt:formatNumber value="${juke.dis }" pattern=".000"/></td>
 			</c:if>
         	<td>${juke.title }</td>
@@ -335,6 +435,7 @@
         		</c:otherwise>
         	</c:choose>
                 <a href="#" data-toggle="modal" data-target="#boardDetail" style="color: black;" onclick="boardDetail('${juke.jseq }','${juke.title }','${juke.id }','${juke.content}','${juke.lat }','${juke.lon }')"><i class="far fa-file-alt fa-2x"></i></a>
+                <a href="#" data-toggle="modal" data-target="#msgModal" style="color: black;" onclick="openMsgModal('${juke.id}')"><i class="fas fa-envelope fa-2x"></i></a>
                 <a href="#" style="color: black;" onclick="changeCenter('${juke.lat }','${juke.lon }')"><i class="fas fa-map-marker fa-2x"></i></a>
             </td>
         </tr>
@@ -362,6 +463,7 @@
         	<td>${jbm.likey }</td>
         	<td>
                 <a href="#" data-toggle="modal" data-target="#boardDetail" style="color: black;" onclick="boardDetail('${jbm.jseq }','${jbm.title }','${jbm.id }','${jbm.content}','${jbm.lat }','${jbm.lon }')"><i class="far fa-file-alt fa-2x"></i></a>
+            	<a href="#" data-toggle="modal" data-target="#msgModal" style="color: black;" onclick="openMsgModal('${jbm.id}')"><i class="fas fa-envelope fa-2x"></i></a>
             	<a href="#" style="color: black;" onclick="changeCenter('${jbm.lat }','${jbm.lon }')"><i class="fas fa-map-marker fa-2x"></i></a>
             </td>
         </tr>
@@ -446,6 +548,58 @@
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
         <button type="button" class="btn btn-primary" onclick="insertJuke()">Register Marker</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- msg modal -->
+<div class="modal fade" id="msgModal" tabindex="-1" role="dialog" aria-labelledby="msgModal" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Message</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form name="newMarker" method="post" action="jukeMarkerAdd_proc.do" enctype="multipart/form-data">
+        <input type="hidden" name="id" value="${user.id }"/>
+          <div class="form-group">
+            <label id="totext" for="message-text" class="col-form-label"></label>
+            <textarea class="form-control" name="content" id="msgtext"></textarea>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary" onclick="sendMsg()">Send</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- replyModal -->
+<div class="modal fade" id="replyModal" tabindex="-1" role="dialog" aria-labelledby="replyModal" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Message</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" name="id" value="${user.id }"/>
+          <div class="form-group">
+            <label id="reptotext" for="message-text" class="col-form-label"></label>
+            <textarea class="form-control" name="content" id="reptext"></textarea>
+          </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary" onclick="replyMsg()">Send</button>
       </div>
     </div>
   </div>
