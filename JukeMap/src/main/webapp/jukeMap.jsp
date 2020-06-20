@@ -696,13 +696,19 @@ function displayMarker(locPosition, message) {
 	   marker.setMap(map);
 	   
 	   var jseq = ${juke.jseq};
+	   var title = "${juke.title}";
 	   var content = "${juke.content}";
 	   // 마커에 이벤트 등록
 	   // 마커를 클릭했을 때 마커 위에 표시할 인포윈도우를 생성합니다 
-	   var iwContent = '<div style="padding:15px; width:250px; overflow:hidden; word-break:break-all;">' + content + '<br/>' + 
-	   		'<button type="button" class="btn btn-primary" onclick="window.open(\'https://map.kakao.com/link/to/' + content + ',' + lat + ',' + lon + '\')"><i class="fas fa-route"></i></button>' + 
-	   		'<button type="button" class="btn btn-primary" onclick="audioMapPlay(' + jseq + ')"><i class="fas fa-play"></i></button>' + 
-	   		'</div>', // 인포윈도우에 표출될 내용으로 HTML 문자열이나 document element가 가능합니다
+	   var iwContent = '<nav class="navbar navbar-light" style="background-color: #e3f2fd; width:298px">' +
+	   	   '<a class="navbar-brand" href="#"><font size="5px" style="font-family: \'Nanum Pen Script\', cursive;">' + title + '</font></a>' + 
+	       '<div class="btn-group" role="group" aria-label="Basic example">' +
+	       '<button type="button" class="btn btn-link" onclick="window.open(\'https://map.kakao.com/link/to/' + content + ',' + lat + ',' + lon + '\')"><i class="fas fa-route"></i></button>' + 
+	       '<button type="button" class="btn btn-link" onclick="audioMapPlay(' + jseq + ')"><i class="fas fa-play"></i></button>' +
+	       '</div>' +
+	       '</nav>' +
+		   '<div style="padding:15px; width:300px; overflow:hidden; word-break:break-all;">' + content + '<br/>' + 
+	   	   '</div>', // 인포윈도우에 표출될 내용으로 HTML 문자열이나 document element가 가능합니다
        iwRemoveable = true; // removeable 속성을 true 로 설정하면 인포윈도우를 닫을 수 있는 x버튼이 표시됩니다
 		   // 인포윈도우를 생성합니다
 	   var infowindow = new kakao.maps.InfoWindow({
