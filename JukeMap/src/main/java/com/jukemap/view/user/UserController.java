@@ -1,7 +1,9 @@
 package com.jukemap.view.user;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpSession;
 
@@ -17,6 +19,7 @@ import com.jukemap.biz.user.impl.UserService;
 
 @Controller
 public class UserController {
+	private Map<String,UserVO> loginUser = new HashMap<String, UserVO>();
 	@Autowired
 	UserService userService;
 	@Autowired
@@ -28,7 +31,12 @@ public class UserController {
 			Model model) {
 		System.out.println("[Spring Service MVC Framework] 로그아웃 기능 처리");
 		
+		vo = (UserVO) session.getAttribute("user");
+		loginUser.remove(vo.getId());
+		
 		session.removeAttribute("user");
+		
+		
 		return "redirect:login.jsp";
 	}
 	
@@ -39,11 +47,18 @@ public class UserController {
 		System.out.println("[Spring Service MVC Framework] 로그인 기능 처리");
 		UserVO user = userService.getUser(vo);
 		if(user == null) {
-			System.out.println("로그인 실패");
+			System.out.println("로그인 실패 : DB에 없는 정보");
 			String msg = "아이디와 패스워드를 확인해주세요.";
 			model.addAttribute("msg", msg);
 			return "login.jsp";
 		} else {
+			if(loginUser.get(vo.getId()) != null) {
+				System.out.println("로그인 실패 : 이미 로그인 되어 있는 아이디");
+				String msg = "이미 접속해 있는 아이디 입니다.";
+				model.addAttribute("msg", msg);
+				return "login.jsp";
+			}
+			loginUser.put(vo.getId(), vo);
 			session.setAttribute("user", user);
 			return "redirect:jukeMap.do";
 		}

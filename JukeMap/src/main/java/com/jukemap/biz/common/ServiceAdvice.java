@@ -12,7 +12,6 @@ import com.jukemap.biz.user.UserVO;
 @Service
 @Aspect
 public class ServiceAdvice {
-
 	@Around("ServicePointcut.serviceJukePointcut()")
 	public Object jukeCheck(ProceedingJoinPoint pjp) throws Throwable {
 		for(Object obj : pjp.getArgs()) {
