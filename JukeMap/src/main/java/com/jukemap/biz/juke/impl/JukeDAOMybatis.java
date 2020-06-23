@@ -49,6 +49,11 @@ public class JukeDAOMybatis {
 		return mybatis.selectOne("JukeDAO.getJukeRandom", vo);
 	}
 	
+	public JukeVO getJukeListRandomOne(JukeVO vo) {
+		System.out.println("===> Mybatis로 getJukeListRandomOne() 마커 조회 기능 처리");
+		return mybatis.selectOne("JukeDAO.getJukeListRandomOne", vo);
+	}
+	
 	public List<JukeVO> getJukeListMax(JukeVO vo){
 		System.out.println("===> Mybatis로 getJukeListMax() 마커 조회 기능 처리");
 		return mybatis.selectList("JukeDAO.getJukeListMax", vo);

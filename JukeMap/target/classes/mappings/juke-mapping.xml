@@ -61,6 +61,14 @@
 		ORDER BY JSEQ DESC
 	]]>
 	</select>
+	<select id="getJukeListRandomOne" resultType="juke">
+	<![CDATA[
+		SELECT *
+		FROM JUKE
+		WHERE ID=#{id}
+		ORDER BY RAND() LIMIT 1
+	]]>
+	</select>
 	<select id="getJukeListMax" resultType="juke">
 	<![CDATA[
 		SELECT *

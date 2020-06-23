@@ -11,6 +11,7 @@
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
 <link href="resources/fontawesome/css/all.css" rel="stylesheet">
 <link rel="stylesheet" type="text/css" href="//cdn.datatables.net/1.10.21/css/dataTables.bootstrap4.min.css">
+<link rel="stylesheet" type="text/css" href="resources/css/info.css">
 <link rel="stylesheet" type="text/css" href="resources/css/toast.css">
 <link rel="icon" type="image/png" href="resources/images/icons/favicon.ico"/>
 <link href="https://fonts.googleapis.com/css2?family=Nanum+Pen+Script&display=swap" rel="stylesheet">
@@ -52,13 +53,16 @@
 </script>
 
 <script>
-	var audio = new Audio("music/1.mp3");
+	var audio = new Audio('music/' + '${random.jseq}' + '.mp3');
+	var boardtitle;
 	var audioSeq;
 	function audioPlay(){
+		$("#nowtitle").html(boardtitle);
 		audio.src = "music/" + audioSeq + ".mp3";
 		audio.play();
 	}
-	function audioMapPlay(seq){
+	function audioMapPlay(seq,title){
+		$("#nowtitle").html(title);
 		audio.src = "music/" + seq + ".mp3";
 		audio.play();
 	}
@@ -317,7 +321,12 @@
 </form>
 
 <!-- Áöµµ -->
-<div id="map" style="width:100%;height:350px;"></div>
+<div class="map_wrap">
+    <div id="map" style="width:100%;height:100%;position:relative;overflow:hidden;"></div>
+    <div class="nowinfo">
+        <span id="nowtitle">${random.title}</span>
+    </div>
+</div>
 
 <!-- My JukeMapList -->
 <nav>
@@ -704,7 +713,7 @@ function displayMarker(locPosition, message) {
 	   	   '<a class="navbar-brand" href="#"><font size="5px" style="font-family: \'Nanum Pen Script\', cursive;">' + title + '</font></a>' + 
 	       '<div class="btn-group" role="group" aria-label="Basic example">' +
 	       '<button type="button" class="btn btn-link" onclick="window.open(\'https://map.kakao.com/link/to/' + content + ',' + lat + ',' + lon + '\')"><i class="fas fa-route"></i></button>' + 
-	       '<button type="button" class="btn btn-link" onclick="audioMapPlay(' + jseq + ')"><i class="fas fa-play"></i></button>' +
+	       '<button type="button" class="btn btn-link" onclick="audioMapPlay(' + jseq + ',\'' + title + '\')"><i class="fas fa-play"></i></button>' +
 	       '</div>' +
 	       '</nav>' +
 		   '<div style="padding:15px; width:300px; overflow:hidden; word-break:break-all;">' + content + '<br/>' + 
@@ -730,6 +739,7 @@ function displayMarker(locPosition, message) {
     		$("#boardDetailAddress").val(result[0].address.address_name);
     	});
     	audioSeq = seq;
+    	boardtitle = title;
     }
 	
 	function changeCenter(lat,lng){

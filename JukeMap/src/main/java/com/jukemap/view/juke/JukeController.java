@@ -83,6 +83,7 @@ public class JukeController {
 		MessageVO mvo = new MessageVO();
 		mvo.setToid(user.getId());
 		
+		model.addAttribute("random", jukeService.getJukeListRandomOne(jvo));
 		model.addAttribute("msgList",  messageSerivce.getMsgList(mvo));
 		model.addAttribute("ujukeList", jukeService.getJukeList(jvo));
 		model.addAttribute("likeyList", likeyService.getLikeyList(lvo));
@@ -122,6 +123,7 @@ public class JukeController {
 		MessageVO mvo = new MessageVO();
 		mvo.setToid(user.getId());
 		
+		model.addAttribute("random", jukeService.getJukeListRandomOne(jvo));
 		model.addAttribute("msgList",  messageSerivce.getMsgList(mvo));
 		model.addAttribute("ujukeList", jukeService.getJukeList(jvo));
 		model.addAttribute("likeyList", likeyService.getLikeyList(lvo));
