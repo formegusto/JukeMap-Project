@@ -320,7 +320,7 @@
 	<input type="hidden" name="lon"/>
 </form>
 
-<!-- 지도 -->
+<!-- A.지도 -->
 <div class="map_wrap">
     <div id="map" style="width:100%;height:100%;position:relative;overflow:hidden;"></div>
     <div class="nowinfo">
@@ -328,7 +328,7 @@
     </div>
 </div>
 
-<!-- My JukeMapList -->
+<!-- B.My JukeMapList -->
 <nav>
   <div class="nav nav-tabs" id="nav-tab" role="tablist">
     <a class="nav-item nav-link active" id="nav-my-tab" data-toggle="tab" href="#nav-my" role="tab" aria-controls="nav-my" aria-selected="true">My</a>
@@ -386,14 +386,14 @@
     </table>
     </div>
 </div>
-<!-- nav -->
+
+<!-- C.JukeMap Like List -->
 <nav>
   <div class="nav nav-tabs" id="nav-tab" role="tablist">
     <a class="nav-item nav-link active" id="nav-home-tab" data-toggle="tab" href="#nav-home" role="tab" aria-controls="nav-home" aria-selected="true">All</a>
     <a class="nav-item nav-link" id="nav-profile-tab" data-toggle="tab" href="#nav-profile" role="tab" aria-controls="nav-profile" aria-selected="false">Bookmark</a>
   </div>
 </nav>
-<!-- JukeMap Like List -->
 <div class="tab-content col-xs-8 col-xs-offset-2 well" id="nav-tabContent">
 	<div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
     <table id="communityTable" class="table table-scroll">
@@ -573,7 +573,7 @@
         </button>
       </div>
       <div class="modal-body">
-        <form name="newMarker" method="post" action="jukeMarkerAdd_proc.do" enctype="multipart/form-data">
+        <form name="sendMsgForm" method="post" action="jukeMarkerAdd_proc.do" enctype="multipart/form-data">
         <input type="hidden" name="id" value="${user.id }"/>
           <div class="form-group">
             <label id="totext" for="message-text" class="col-form-label"></label>

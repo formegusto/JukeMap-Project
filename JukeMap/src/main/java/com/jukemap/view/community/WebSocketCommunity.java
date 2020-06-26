@@ -75,7 +75,9 @@ public class WebSocketCommunity {
 				MessageVO topMsg = messageService.getMsgTop(vo);
 				
 				message = "sendmsg|" + topMsg.getMseq() + "|" + from + "|" + msg;
-				sendSession.getBasicRemote().sendText(message);
+				if(sendSession != null) {
+					sendSession.getBasicRemote().sendText(message);
+				}
 			}
 		}
 		else {

@@ -25,7 +25,7 @@ public class UserController {
 	@Autowired
 	JukeService jukeService;
 	
-	// 로그인 기능
+	// 로그아웃 기능
 	@RequestMapping(value="/logout.do")
 	public String logout(UserVO vo, HttpSession session,
 			Model model) {
@@ -35,7 +35,6 @@ public class UserController {
 		loginUser.remove(vo.getId());
 		
 		session.removeAttribute("user");
-		
 		
 		return "redirect:login.jsp";
 	}
@@ -73,12 +72,13 @@ public class UserController {
 		if(vo.getId() == null || vo.getName() == null || vo.getPassword() == null) {
 			String msg = "잘못된 접근 입니다.";
 			model.addAttribute("msg", msg);
+			return "login.jsp";
 		} else {
 			userService.insertUser(vo);
 			session.setAttribute("user", vo);
 		}
 		
-		return "login.jsp";
+		return "redirect:jukeMap.do";
 	}
 	
 	// 비밀번호 찾기 (아이디체크)
@@ -116,7 +116,7 @@ public class UserController {
 		return rtnAdd;
 	}
 	
-	// 비밀번호 찾기 (아이디체크)
+	// 퀴즈 매칭
 	@RequestMapping(value="/forgotQuiz.do")
 	public String forgotQuiz(UserVO vo, String ansJseq,
 			HttpSession session, Model model) {
