@@ -19,7 +19,7 @@ import com.jukemap.biz.user.impl.UserService;
 
 @Controller
 public class UserController {
-	private Map<String,UserVO> loginUser = new HashMap<String, UserVO>();
+	private static Map<String,UserVO> loginUser = new HashMap<String, UserVO>();
 	@Autowired
 	UserService userService;
 	@Autowired
@@ -31,10 +31,13 @@ public class UserController {
 			Model model) {
 		System.out.println("[Spring Service MVC Framework] 로그아웃 기능 처리");
 		
-		vo = (UserVO) session.getAttribute("user");
-		loginUser.remove(vo.getId());
-		
-		session.removeAttribute("user");
+		UserVO user = (UserVO)session.getAttribute("user");
+		if(user==null) {
+			loginUser.remove(vo.getId());
+		} else {
+			loginUser.remove(user.getId());
+			session.removeAttribute("user");
+		}
 		
 		return "redirect:login.jsp";
 	}
@@ -57,8 +60,10 @@ public class UserController {
 				model.addAttribute("msg", msg);
 				return "login.jsp";
 			}
-			loginUser.put(vo.getId(), vo);
+			loginUser.put(vo.getId(), user);
+			System.out.println(loginUser.toString());
 			session.setAttribute("user", user);
+			
 			return "redirect:jukeMap.do";
 		}
 	}
@@ -75,6 +80,7 @@ public class UserController {
 			return "login.jsp";
 		} else {
 			userService.insertUser(vo);
+			loginUser.put(vo.getId(), vo);
 			session.setAttribute("user", vo);
 		}
 		

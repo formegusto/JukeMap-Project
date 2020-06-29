@@ -42,7 +42,6 @@ public class JukeController {
 		System.out.println(vo);
 		jukeService.insertMarker(vo);
 		
-	
 		String filePath = session.getServletContext().getRealPath("/music");
 		String fileName = jukeService.getJukeTopnum() + ".mp3";
 		
@@ -58,7 +57,6 @@ public class JukeController {
 	public String jukeMap(JukeVO vo, HttpSession session,
 			Model model) {
 		UserVO user = (UserVO)session.getAttribute("user");
-		
 		System.out.println(user.getId());
 		
 		JukeVO jvo = new JukeVO();
