@@ -256,8 +256,8 @@
   	}
     function jukeDisLoad(){
     	 navigator.geolocation.getCurrentPosition(function(position) {
-    	        var lat = position.coords.latitude, // 위도
-    	            lon = position.coords.longitude; // 경도
+    	        var lat = position.coords.latitude, // 위도다
+    	            lon = position.coords.longitude; // 경도다
     	       
     	            document.getElementsByName('lat')[0].value = lat;
     	            document.getElementsByName('lon')[0].value = lon;
